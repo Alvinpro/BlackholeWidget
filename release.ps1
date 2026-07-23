@@ -63,13 +63,18 @@ if (-not $SkipBuild -or -not $DryRun) {
     if ($LASTEXITCODE -ne 0) { $remote = "" }
     if (-not $remote) {
         Write-Host "  WARNING: no git remote 'origin' configured" -ForegroundColor Yellow
-        Write-Host "  Set it with: git remote add origin https://github.com/YOU/BlackholeWidget.git" -ForegroundColor White
+        Write-Host "  Set it with: git remote add origin git@github.com:YOU/BlackholeWidget.git" -ForegroundColor White
         if (-not $DryRun) {
             $answer = Read-Host "  Continue anyway (push will be skipped)? [y/N]"
             if ($answer -ne 'y' -and $answer -ne 'Y') { exit 0 }
         }
     } else {
         Write-Host "  OK: remote = $remote" -ForegroundColor Green
+    }
+
+    # Configure gh to use SSH protocol
+    if (Get-Command gh -ErrorAction SilentlyContinue) {
+        gh config set -h github.com git_protocol ssh 2>$null
     }
 
     # Check gh login (if installed)
