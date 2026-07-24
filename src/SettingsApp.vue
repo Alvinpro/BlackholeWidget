@@ -61,10 +61,13 @@ async function load() {
 
 async function save() {
   try {
+    // 读取当前完整设置以保留 active_model 等字段
+    const current = await invoke('get_settings');
     await invoke('save_settings', {
       settings: {
         confirm_delete: form.confirm_delete,
         permanent_delete: form.permanent_delete,
+        active_model: current.active_model,
       },
     });
     // Notify main window

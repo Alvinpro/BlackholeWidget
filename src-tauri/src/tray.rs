@@ -1,8 +1,9 @@
+use crate::config;
 use tauri::{
     image::Image,
-    menu::{CheckMenuItemBuilder, MenuBuilder, MenuItemBuilder},
+    menu::{CheckMenuItemBuilder, MenuBuilder, MenuItemBuilder, SubmenuBuilder},
     tray::TrayIconBuilder,
-    AppHandle, LogicalSize, Manager, Runtime, WebviewWindowBuilder,
+    AppHandle, Emitter, LogicalSize, Manager, Runtime, WebviewWindowBuilder,
 };
 use tauri_plugin_autostart::AutoLaunchManager;
 
@@ -41,6 +42,31 @@ fn autostart_enabled<R: Runtime>(app: &AppHandle<R>) -> bool {
         .unwrap_or(false)
 }
 
+fn active_model_id() -> String {
+    config::load_settings().active_model
+}
+
+/// Build a submenu for model switching
+fn build_model_submenu<R: Runtime>(
+    app: &AppHandle<R>,
+) -> tauri::Result<tauri::menu::Submenu<R>> {
+    let models = crate::get_models();
+    let active_id = active_model_id();
+
+    let mut submenu = SubmenuBuilder::new(app, "切换模型");
+
+    for model in &models {
+        let is_active = model.id == active_id;
+        let id = format!("model:{}", model.id);
+        let item = CheckMenuItemBuilder::with_id(&id, &model.name)
+            .checked(is_active)
+            .build(app)?;
+        submenu = submenu.item(&item);
+    }
+
+    submenu.build()
+}
+
 /// Build a menu for the tray with the given autostart state
 fn build_menu<R: Runtime>(
     app: &AppHandle<R>,
@@ -55,10 +81,14 @@ fn build_menu<R: Runtime>(
     let settings = MenuItemBuilder::with_id("settings", "设置").build(app)?;
     let quit = MenuItemBuilder::with_id("quit", "退出").build(app)?;
 
+    let model_submenu = build_model_submenu(app)?;
+
     MenuBuilder::new(app)
         .item(&show_hide)
         .item(&zoom_in)
         .item(&zoom_out)
+        .separator()
+        .item(&model_submenu)
         .separator()
         .item(&autostart)
         .item(&settings)
@@ -90,7 +120,8 @@ pub fn create_tray<R: Runtime>(app: &AppHandle<R>) -> tauri::Result<()> {
         .icon(icon)
         .menu(&menu)
         .on_menu_event(|app, event| {
-            match event.id().as_ref() {
+            let event_id = event.id().as_ref().to_string();
+            match event_id.as_str() {
                 "show_hide" => {
                     if let Some(window) = app.get_webview_window("main") {
                         let visible = window.is_visible().unwrap_or(false);
@@ -128,11 +159,49 @@ pub fn create_tray<R: Runtime>(app: &AppHandle<R>) -> tauri::Result<()> {
                 "quit" => {
                     app.exit(0);
                 }
+                id if id.starts_with("model:") => {
+                    let model_id = id.strip_prefix("model:").unwrap_or("model-1");
+                    handle_model_switch(app, model_id);
+                }
                 _ => {}
             }
         })
         .build(app)?;
 
+    Ok(())
+}
+
+fn handle_model_switch<R: Runtime>(app: &AppHandle<R>, model_id: &str) {
+    // 验证模型是否存在
+    let models = crate::get_models();
+    if !models.iter().any(|m| m.id == model_id) {
+        return;
+    }
+
+    // 保存到配置
+    let mut settings = config::load_settings();
+    settings.active_model = model_id.to_string();
+    if config::save_settings(&settings).is_err() {
+        return;
+    }
+
+    // 通知前端切换模型
+    let _ = app.emit("model-changed", model_id.to_string());
+
+    // 重建托盘菜单以更新选中状态
+    if let Ok(new_menu) = build_menu(app, autostart_enabled(app)) {
+        if let Some(tray) = app.tray_by_id("main-tray") {
+            let _ = tray.set_menu(Some(new_menu));
+        }
+    }
+}
+
+/// 重建托盘菜单（外部调用，如切换模型后更新选中状态）
+pub fn rebuild_tray<R: Runtime>(app: &AppHandle<R>) -> tauri::Result<()> {
+    let new_menu = build_menu(app, autostart_enabled(app))?;
+    if let Some(tray) = app.tray_by_id("main-tray") {
+        tray.set_menu(Some(new_menu))?;
+    }
     Ok(())
 }
 

@@ -6,6 +6,12 @@ use std::path::PathBuf;
 pub struct Settings {
     pub confirm_delete: bool,
     pub permanent_delete: bool,
+    #[serde(default = "default_model")]
+    pub active_model: String,
+}
+
+fn default_model() -> String {
+    "model-1".to_string()
 }
 
 impl Default for Settings {
@@ -13,6 +19,7 @@ impl Default for Settings {
         Self {
             confirm_delete: true,
             permanent_delete: false,
+            active_model: default_model(),
         }
     }
 }

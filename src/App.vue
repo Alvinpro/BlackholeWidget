@@ -28,6 +28,8 @@
 <script setup>
 import { ref, onMounted, onUnmounted, watch } from 'vue';
 import { getCurrentWindow } from '@tauri-apps/api/window';
+import { listen } from '@tauri-apps/api/event';
+import { invoke } from '@tauri-apps/api/core';
 import { useBlackHole } from './composables/useBlackHole.js';
 import { useFileDrop } from './composables/useFileDrop.js';
 
@@ -41,7 +43,7 @@ const settings = ref({
 });
 
 // --- Three.js Black Hole ---
-const { init: initBlackHole, cleanup: cleanupBlackHole, setDragOver } =
+const { init: initBlackHole, cleanup: cleanupBlackHole, setDragOver, switchModel } =
   useBlackHole(canvasContainer);
 
 // --- File Drop ---
@@ -74,9 +76,25 @@ function onMouseDown(e) {
 }
 
 // --- Lifecycle ---
+let unlistenModelChange = null;
+
 onMounted(async () => {
-  initBlackHole();
+  // 读取持久化的活动模型
+  let activeModel = null;
+  try {
+    const saved = await invoke('get_settings');
+    activeModel = saved.active_model;
+  } catch (e) {
+    console.error('读取设置失败:', e);
+  }
+
+  initBlackHole(activeModel);
   await initDrop();
+
+  // Listen for model switch events from tray menu
+  unlistenModelChange = await listen('model-changed', (event) => {
+    switchModel(event.payload);
+  });
 
   // Listen for pulse events
   window.addEventListener('blackhole-pulse', triggerPulse);
@@ -87,5 +105,6 @@ onUnmounted(() => {
   cleanupDrop();
   clearTimeout(pulseTimer);
   window.removeEventListener('blackhole-pulse', triggerPulse);
+  if (unlistenModelChange) unlistenModelChange();
 });
 </script>
