@@ -3,6 +3,7 @@
     class="widget-container"
     data-tauri-drag-region
     @mousedown="onMouseDown"
+    @contextmenu.prevent
   >
     <!-- Three.js canvas mount point -->
     <div ref="canvasContainer" class="canvas-container"></div>

@@ -13,6 +13,11 @@ export function useBlackHole(containerRef) {
     let currentGlow = 0.8;
     let targetGlow = 0.8;
 
+    // Right-click drag rotation state
+    let isRightDragging = false;
+    let prevMouseX = 0;
+    let prevMouseY = 0;
+
     function init(modelId) {
         const id = modelId || DEFAULT_MODEL;
         currentModelId.value = id;
@@ -50,6 +55,12 @@ export function useBlackHole(containerRef) {
 
         // --- Resize listener ---
         window.addEventListener('resize', onResize);
+
+        // --- Right-click drag rotation listeners ---
+        container.addEventListener('mousedown', onRightMouseDown);
+        container.addEventListener('contextmenu', preventContextMenu);
+        window.addEventListener('mousemove', onRightMouseMove);
+        window.addEventListener('mouseup', onRightMouseUp);
 
         // --- Load and create model, then start loop ---
         loadAndCreateModel(id).then(() => {
@@ -105,8 +116,8 @@ export function useBlackHole(containerRef) {
             modelInstance.setGlow(currentGlow);
         }
 
-        // Rotate the whole system slowly
-        if (holeGroup) {
+        // Auto-rotate only when not right-dragging
+        if (holeGroup && !isRightDragging) {
             holeGroup.rotation.y += 0.003;
         }
 
@@ -118,6 +129,35 @@ export function useBlackHole(containerRef) {
         renderer.render(scene, camera);
     }
 
+    // --- Right-click drag to rotate the 3D model ---
+    function onRightMouseDown(e) {
+        if (e.button === 2) {
+            isRightDragging = true;
+            prevMouseX = e.clientX;
+            prevMouseY = e.clientY;
+            e.preventDefault();
+            e.stopPropagation();
+        }
+    }
+
+    function onRightMouseMove(e) {
+        if (!isRightDragging || !holeGroup) return;
+        const dx = e.clientX - prevMouseX;
+        const dy = e.clientY - prevMouseY;
+        holeGroup.rotation.y += dx * 0.01;
+        holeGroup.rotation.x += dy * 0.01;
+        prevMouseX = e.clientX;
+        prevMouseY = e.clientY;
+    }
+
+    function onRightMouseUp() {
+        isRightDragging = false;
+    }
+
+    function preventContextMenu(e) {
+        e.preventDefault();
+    }
+
     function setDragOver(state) {
         dragOver.value = state;
         targetGlow = state ? 2.0 : 0.8;
@@ -126,6 +166,8 @@ export function useBlackHole(containerRef) {
     function cleanup() {
         cancelAnimationFrame(animationId);
         window.removeEventListener('resize', onResize);
+        window.removeEventListener('mousemove', onRightMouseMove);
+        window.removeEventListener('mouseup', onRightMouseUp);
 
         if (modelInstance) {
             modelInstance.dispose();
