@@ -9,7 +9,7 @@ A cute (Q-version) desktop 3D black hole widget — drag files into it to delete
 - 3D rotating black hole floating on your desktop (Three.js + Fresnel glow shader)
 - Drag files onto the black hole to delete them (recycle bin or permanent)
 - System tray menu: show/hide, zoom in/out, switch model, auto-start, settings, exit
-- Multiple 3D black hole models with hot-switching (default purple & shimmering gold)
+- Multiple 3D black hole models with hot-switching (purple, gold, ice-blue, and ray-traced lens)
 - Right-click drag to rotate the 3D view
 - Settings window: confirm before delete, permanent delete toggle
 - Window is draggable to reposition
@@ -58,8 +58,10 @@ BlackholeWidget/
 │   │   └── useFileDrop.js   # File drag-drop event handling
 │   ├── models/              # 3D model definitions
 │   │   ├── index.js         # Model registry
-│   │   ├── model-1.js       # Model 1 (default · purple theme)
-│   │   └── model-2.js       # Model 2 (shimmering gold theme)
+│   │   ├── model-1.js       # Model 1 (purple theme)
+│   │   ├── model-2.js       # Model 2 (shimmering gold theme)
+│   │   ├── model-3.js       # Model 3 (ice-blue theme)
+│   │   └── model-4.js       # Model 4 (ray-traced Schwarzschild lens)
 │   └── shaders/             # GLSL shaders
 ├── src-tauri/               # Tauri / Rust backend
 │   └── src/
@@ -72,6 +74,13 @@ BlackholeWidget/
 ```
 
 ## Changelog
+
+### v0.1.2
+
+- **Model 3** (new): ice-blue theme — cool white Fresnel glow + ice-blue accretion disk + cyan-blue photon ring + white-to-blue gradient particles
+- **Model 4** (new): ray-traced lens black hole — Schwarzschild geodesic ray marching, FBM turbulent accretion disk, Doppler beaming, bloom, renders entirely in a fragment shader
+- **Window size persistence**: last window size is saved and restored on next startup
+- **Animation fix**: resolved float precision issue causing Model 4 shader time uniform to freeze (switched from `Date.now()` to `performance.now()`)
 
 ### v0.1.1
 
@@ -101,7 +110,7 @@ Q版 桌面 3D 黑洞小组件 — 将文件拖入黑洞即可删除。
 - 3D 旋转黑洞悬浮在桌面上（Three.js + Fresnel 辉光着色器）
 - 将文件拖到黑洞上 → 删除到回收站（或永久删除）
 - 系统托盘菜单：显示/隐藏、放大/缩小、切换模型、开机启动、设置、退出
-- 多种 3D 黑洞模型可热切换（默认紫色 & 闪闪金色）
+- 多种 3D 黑洞模型可热切换（紫色、金色、冰蓝、射线追踪透镜）
 - 右键拖拽旋转 3D 视角
 - 设置窗口：删除前确认、永久删除开关
 - 窗口可拖拽移动位置
@@ -153,8 +162,10 @@ BlackholeWidget/
 │   │   └── useFileDrop.js   # 文件拖放事件处理
 │   ├── models/              # 3D 模型定义
 │   │   ├── index.js         # 模型注册表
-│   │   ├── model-1.js       # 模型1号（默认 · 紫色主题）
-│   │   └── model-2.js       # 模型2号（闪闪金色主题）
+│   │   ├── model-1.js       # 模型1号（紫色主题）
+│   │   ├── model-2.js       # 模型2号（闪闪金色主题）
+│   │   ├── model-3.js       # 模型3号（冰蓝主题）
+│   │   └── model-4.js       # 模型4号（施瓦西射线追踪透镜）
 │   └── shaders/             # GLSL 着色器
 ├── src-tauri/               # Tauri / Rust 后端
 │   └── src/
@@ -167,6 +178,13 @@ BlackholeWidget/
 ```
 
 ## 更新日志
+
+### v0.1.2
+
+- **模型3号**（新增）：冰蓝主题 — 冷白菲涅尔发光 + 冰蓝吸积盘 + 青蓝光子环 + 白→天蓝→深蓝渐变粒子
+- **模型4号**（新增）：透镜黑洞 — 施瓦西测地线积分、FBM 湍流吸积盘、Doppler 效应、bloom，全部在片段着色器中渲染
+- **窗口大小持久化**：上次窗口大小会被保存，下次启动自动恢复
+- **动画修复**：修复浮点精度问题导致模型4号着色器时间 uniform 冻结（`Date.now()` 替换为 `performance.now()`）
 
 ### v0.1.1
 
