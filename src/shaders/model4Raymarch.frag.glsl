@@ -122,11 +122,11 @@ vec4 renderBlackHole(vec2 uv) {
 
   float pitch, roll, camY, camZ, fov;
   if (u_variant < 0.5) {
-    pitch = -0.22; roll = -0.18; camY = 0.20; camZ = -3.8; fov = 1.32;
+    pitch = -0.22; roll = -0.18; camY = 0.0; camZ = -3.8; fov = 1.32;
   } else if (u_variant < 1.5) {
-    pitch = -0.04; roll = 0.02; camY = 0.05; camZ = -4.65; fov = 1.24;
+    pitch = -0.04; roll = 0.02; camY = 0.0; camZ = -4.65; fov = 1.24;
   } else {
-    pitch = -1.28; roll = 0.12; camY = 0.14; camZ = -3.55; fov = 1.36;
+    pitch = -1.28; roll = 0.12; camY = 0.0; camZ = -3.55; fov = 1.36;
   }
 
   vec3 ro = vec3(0.0, camY, camZ);

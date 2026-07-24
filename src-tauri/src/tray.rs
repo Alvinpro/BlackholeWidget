@@ -104,8 +104,8 @@ fn resize_main_window<R: Runtime>(app: &AppHandle<R>, delta: f64) {
             let logical: LogicalSize<f64> = current.to_logical(scale);
             let w: f64 = logical.width;
             let h: f64 = logical.height;
-            let new_w = (w + delta).max(200.0).min(800.0);
-            let new_h = (h + delta).max(200.0).min(800.0);
+            let new_w = (w + delta).max(120.0).min(800.0);
+            let new_h = (h + delta).max(120.0).min(800.0);
             let _ = window.set_size(LogicalSize::new(new_w, new_h));
         }
     }

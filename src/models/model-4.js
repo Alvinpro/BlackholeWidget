@@ -35,15 +35,10 @@ export default function createModel(group) {
     mesh.renderOrder = 0;
     group.add(mesh);
 
-    function syncResolution() {
-        const dpr = window.devicePixelRatio || 1;
-        material.uniforms.u_resolution.value.set(window.innerWidth * dpr, window.innerHeight * dpr);
-        // 使黑洞的视觉大小自适应窗口
-        material.uniforms.u_viewRef.value = 280.0 * dpr;
-    }
-
-    syncResolution();
-    window.addEventListener('resize', syncResolution);
+    // 初始设置，后续在 animate 中动态同步
+    const initialDpr = window.devicePixelRatio || 1;
+    material.uniforms.u_resolution.value.set(window.innerWidth * initialDpr, window.innerHeight * initialDpr);
+    material.uniforms.u_viewRef.value = window.innerHeight * initialDpr * 1.15;
 
     function setGlow(intensity) {
         material.uniforms.u_glow.value = intensity;
@@ -52,6 +47,14 @@ export default function createModel(group) {
     function animate(elapsed) {
         material.uniforms.u_time.value = elapsed * 0.001;
 
+        // 动态读取画布尺寸，确保窗口缩放时黑洞能自适应缩放并保持居中
+        const canvas = document.querySelector('canvas');
+        if (canvas) {
+            material.uniforms.u_resolution.value.set(canvas.width, canvas.height);
+            // 调整 u_viewRef 使其与画布高度挂钩，1.15 是为了和其他模型的视觉大小对齐
+            material.uniforms.u_viewRef.value = canvas.height * 1.15;
+        }
+
         // 提取外层组的旋转矩阵并传递给着色器，使右键拖拽可以旋转射线追踪中的黑洞
         const rotMat = new THREE.Matrix4().makeRotationFromEuler(group.rotation);
         const mat3 = new THREE.Matrix3().setFromMatrix4(rotMat);
@@ -59,7 +62,6 @@ export default function createModel(group) {
     }
 
     function dispose() {
-        window.removeEventListener('resize', syncResolution);
         geometry.dispose();
         material.dispose();
     }
