@@ -107,6 +107,11 @@ fn resize_main_window<R: Runtime>(app: &AppHandle<R>, delta: f64) {
             let new_w = (w + delta).max(120.0).min(800.0);
             let new_h = (h + delta).max(120.0).min(800.0);
             let _ = window.set_size(LogicalSize::new(new_w, new_h));
+            // 持久化窗口大小
+            let mut settings = config::load_settings();
+            settings.window_width = new_w;
+            settings.window_height = new_h;
+            let _ = config::save_settings(&settings);
         }
     }
 }

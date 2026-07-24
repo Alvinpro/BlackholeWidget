@@ -122,8 +122,9 @@ export function useBlackHole(containerRef) {
         }
 
         // Delegate model-specific animation
+        // 使用 performance.now() 而非 Date.now()，避免浮点精度问题导致着色器 u_time 冻结
         if (modelInstance) {
-            modelInstance.animate(Date.now());
+            modelInstance.animate(performance.now());
         }
 
         renderer.render(scene, camera);

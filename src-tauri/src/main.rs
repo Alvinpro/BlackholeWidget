@@ -5,7 +5,7 @@ mod file_ops;
 mod tray;
 
 use serde::Serialize;
-use tauri::Emitter;
+use tauri::{Emitter, LogicalSize, Manager};
 
 #[derive(Debug, Serialize, Clone)]
 pub struct ModelInfo {
@@ -110,6 +110,14 @@ fn main() {
         ))
         .setup(|app| {
             tray::create_tray(app.handle())?;
+            // 恢复持久化的窗口大小
+            let settings = config::load_settings();
+            if let Some(window) = app.get_webview_window("main") {
+                let _ = window.set_size(LogicalSize::new(
+                    settings.window_width,
+                    settings.window_height,
+                ));
+            }
             Ok(())
         })
         .invoke_handler(tauri::generate_handler![
