@@ -79,8 +79,6 @@ BlackholeWidget/
 
 - **Model 3** (new): ice-blue theme — cool white Fresnel glow + ice-blue accretion disk + cyan-blue photon ring + white-to-blue gradient particles
 - **Model 4** (new): ray-traced lens black hole — Schwarzschild geodesic ray marching, FBM turbulent accretion disk, Doppler beaming, bloom, renders entirely in a fragment shader
-- **Window size persistence**: last window size is saved and restored on next startup
-- **Animation fix**: resolved float precision issue causing Model 4 shader time uniform to freeze (switched from `Date.now()` to `performance.now()`)
 
 ### v0.1.1
 
@@ -183,8 +181,6 @@ BlackholeWidget/
 
 - **模型3号**（新增）：冰蓝主题 — 冷白菲涅尔发光 + 冰蓝吸积盘 + 青蓝光子环 + 白→天蓝→深蓝渐变粒子
 - **模型4号**（新增）：透镜黑洞 — 施瓦西测地线积分、FBM 湍流吸积盘、Doppler 效应、bloom，全部在片段着色器中渲染
-- **窗口大小持久化**：上次窗口大小会被保存，下次启动自动恢复
-- **动画修复**：修复浮点精度问题导致模型4号着色器时间 uniform 冻结（`Date.now()` 替换为 `performance.now()`）
 
 ### v0.1.1
 
