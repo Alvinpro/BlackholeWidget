@@ -9,7 +9,7 @@ A cute (Q-version) desktop 3D black hole widget — drag files into it to delete
 - 3D rotating black hole floating on your desktop (Three.js + Fresnel glow shader)
 - Drag files onto the black hole to delete them (recycle bin or permanent)
 - System tray menu: show/hide, zoom in/out, switch model, auto-start, settings, exit
-- Multiple 3D black hole models with hot-switching (purple, gold, ice-blue, and ray-traced lens)
+- Multiple 3D black hole models with hot-switching (purple, gold, ice-blue, ray-traced lens, and digital character)
 - Right-click drag to rotate the 3D view
 - Settings window: confirm before delete, permanent delete toggle
 - Window is draggable to reposition
@@ -61,7 +61,8 @@ BlackholeWidget/
 │   │   ├── model-1.js       # Model 1 (purple theme)
 │   │   ├── model-2.js       # Model 2 (shimmering gold theme)
 │   │   ├── model-3.js       # Model 3 (ice-blue theme)
-│   │   └── model-4.js       # Model 4 (ray-traced Schwarzschild lens)
+│   │   ├── model-4.js       # Model 4 (ray-traced Schwarzschild lens)
+│   │   └── model-5.js       # Model 5 (Digi-Girl digital character)
 │   └── shaders/             # GLSL shaders
 ├── src-tauri/               # Tauri / Rust backend
 │   └── src/
@@ -74,6 +75,11 @@ BlackholeWidget/
 ```
 
 ## Changelog
+
+### v0.1.3
+
+- **Model 5** (new): Digi-Girl digital character
+- **Model hot-switch enhancement**: group rotation resets to identity on model switch, letting each model set its own default view angle
 
 ### v0.1.2
 
@@ -108,7 +114,7 @@ Q版 桌面 3D 黑洞小组件 — 将文件拖入黑洞即可删除。
 - 3D 旋转黑洞悬浮在桌面上（Three.js + Fresnel 辉光着色器）
 - 将文件拖到黑洞上 → 删除到回收站（或永久删除）
 - 系统托盘菜单：显示/隐藏、放大/缩小、切换模型、开机启动、设置、退出
-- 多种 3D 黑洞模型可热切换（紫色、金色、冰蓝、射线追踪透镜）
+- 多种 3D 黑洞模型可热切换（紫色、金色、冰蓝、射线追踪透镜、数字角色）
 - 右键拖拽旋转 3D 视角
 - 设置窗口：删除前确认、永久删除开关
 - 窗口可拖拽移动位置
@@ -164,6 +170,7 @@ BlackholeWidget/
 │   │   ├── model-2.js       # 模型2号（闪闪金色主题）
 │   │   ├── model-3.js       # 模型3号（冰蓝主题）
 │   │   └── model-4.js       # 模型4号（施瓦西射线追踪透镜）
+│   │   └── model-5.js       # 模型5号（Digi-Girl 数字角色）
 │   └── shaders/             # GLSL 着色器
 ├── src-tauri/               # Tauri / Rust 后端
 │   └── src/
@@ -177,6 +184,11 @@ BlackholeWidget/
 
 ## 更新日志
 
+### v0.1.3
+
+- **模型5号**（新增）：Digi-Girl 数字角色 
+- **模型切换增强**：切换模型时 group 旋转归零，让每个模型自行设定默认视角
+
 ### v0.1.2
 
 - **模型3号**（新增）：冰蓝主题 — 冷白菲涅尔发光 + 冰蓝吸积盘 + 青蓝光子环 + 白→天蓝→深蓝渐变粒子
@@ -185,8 +197,8 @@ BlackholeWidget/
 ### v0.1.1
 
 - **模型系统**：3D 模型代码从 `useBlackHole.js` 抽离为独立模型文件（`src/models/`），支持动态切换
-- **模型1号**（默认）：紫色菲涅尔发光 + 橙色吸积盘 + 紫色光子环
-- **模型2号**（新增）：闪闪金色主题 — 金菊色吸积盘、亮金外圈、奶油金光子环、500 颗渐变金粒子
+- **模型1号**（默认）：紫色主题 — 菲涅尔发光 + 橙色吸积盘 + 紫色光子环
+- **模型2号**（新增）：金色主题 — 金菊色吸积盘、亮金外圈、奶油金光子环、500 颗渐变金粒子
 - **托盘菜单「切换模型」**：右键托盘图标 → 切换模型子菜单，勾选显示当前模型，支持运行时热切换
 - **模型选择持久化**：下次启动自动使用上次选择的模型
 - **右键拖拽旋转**：在黑洞窗口上按住右键拖动可 3D 旋转视角，松开后恢复自动旋转
