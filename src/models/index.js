@@ -19,6 +19,10 @@ const modelRegistry = {
         name: '模型4号',
         loader: () => import('./model-4.js'),
     },
+    'model-5': {
+        name: '模型5号',
+        loader: () => import('./model-5.js'),
+    },
 };
 
 /** 默认模型 ID */

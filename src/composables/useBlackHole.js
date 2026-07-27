@@ -86,6 +86,9 @@ export function useBlackHole(containerRef) {
             }
         }
 
+        // Reset group rotation so the new model can set its own
+        holeGroup.rotation.set(0, 0, 0);
+
         // Load and create new model
         await loadAndCreateModel(modelId);
         currentModelId.value = modelId;
@@ -116,8 +119,8 @@ export function useBlackHole(containerRef) {
             modelInstance.setGlow(currentGlow);
         }
 
-        // Auto-rotate only when not right-dragging
-        if (holeGroup && !isRightDragging) {
+        // Auto-rotate only when not right-dragging and model allows it
+        if (holeGroup && !isRightDragging && modelInstance?.autoRotate !== false) {
             holeGroup.rotation.y += 0.003;
         }
 
