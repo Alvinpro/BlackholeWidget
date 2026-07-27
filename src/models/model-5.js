@@ -7,87 +7,118 @@ import textureUrl from '../assets/Digi-Girl_480.png';
 
 const CONFIG = {
     // ── 灯光 ────────────────────────────────────────────────
-    light_ambient:    { color: 0xffffff, intensity: 2.3 },
-    light_key:        { color: 0xfff5e6, intensity: 0.6, x: 5, y: 6, z: 5 },
-    light_camera:     { color: 0xffffff, intensity: 2.0, distance: 20, x: 0, y: 3, z: 8 },
-    light_rim:        { color: 0xff4444, intensity: 0.8, distance: 15, x: 0, y: 2.5, z: -6 },
-    light_side:       { color: 0xffffff, intensity: 0.4, distance: 12, x: -6, y: 2.5, z: 0 },
-    light_bottom:     { color: 0x440000, intensity: 0.3, x: 0, y: -5, z: 0 },
+    light_ambient:    { color: 0xffffff, intensity: 2.3 },                     // 环境光: 均匀照亮整个场景
+    light_key:        { color: 0xfff5e6, intensity: 0.6, x: 5, y: 6, z: 5 }, // 主补光: 模拟上方暖光源
+    light_camera:     { color: 0xffffff, intensity: 2.0, distance: 20, x: 0, y: 3, z: 8 }, // 相机柔光: 正面补光
+    light_rim:        { color: 0xff4444, intensity: 0.8, distance: 15, x: 0, y: 2.5, z: -6 }, // 轮廓光: 背后红色勾勒边缘
+    light_side:       { color: 0xffffff, intensity: 0.4, distance: 12, x: -6, y: 2.5, z: 0 }, // 侧补光: 消除暗面
+    light_bottom:     { color: 0x440000, intensity: 0.3, x: 0, y: -5, z: 0 }, // 底部补光: 暗红色底光
 
     // ── 角色平面 ────────────────────────────────────────────
-    char_width:       3.5,
-    char_placeholder: 0x330000,
-    char_roughness:   0.15,
-    char_metalness:   0.05,
+    char_width:       6,             // 角色平面世界单位宽度 (越大越撑满窗口)
+    char_placeholder: 0x330000,      // 纹理加载前的占位色 (暗红)
+    char_roughness:   0.15,          // 材质粗糙度 (0=镜面, 1=磨砂)
+    char_metalness:   0.05,          // 材质金属度 (0=非金属, 1=金属)
+
+    // ── 底部遮罩 ────────────────────────────────────────────
+    mask_opaque_ratio: 0.55,         // 上部不透明比例 (0=全透明, 1=全不透明, 此处 55% 以上渐隐)
+    mask_resolution:  128,           // 渐变纹理高度像素 (越大渐变越平滑)
 
     // ── 边缘辉光 ────────────────────────────────────────────
-    glow_opacity:     0.55,
-    glow_scale:       1.12,
-    glow_z:           -0.03,
-    glow_color_inner: 'rgba(255,20,20,0.25)',
-    glow_color_mid:   'rgba(255,0,0,0.08)',
-    glow_mid_stop:    0.55,
+    glow_opacity:     0.55,                           // 辉光整体透明度
+    glow_scale:       1.12,                           // 辉光平面相对角色的放大倍率
+    glow_z:           -0.03,                          // 辉光平面 Z 偏移 (负=背后)
+    glow_color_inner: 'rgba(255,20,20,0.25)',         // 辉光渐变内圈颜色
+    glow_color_mid:   'rgba(255,0,0,0.08)',           // 辉光渐变中圈颜色
+    glow_mid_stop:    0.55,                           // 中圈颜色渐变停止位置 (0~1)
 
     // ── 全息扫描 ────────────────────────────────────────────
-    scan_color:       0xff2020,
-    scan_opacity:     0.45,
-    scan_width_scale: 1.08,
-    scan_height:      0.06,
-    scan_z:           0.02,
-    scan_freq:        0.75,
+    scan_color:       0xff2020,     // 扫描线颜色
+    scan_opacity:     0.45,         // 扫描线透明度
+    scan_width_scale: 1.08,         // 扫描线宽度 (相对角色宽度)
+    scan_height:      0.06,         // 扫描线高度
+    scan_z:           0.02,         // 扫描线 Z 偏移 (正=前方)
+    scan_freq:        0.75,         // 扫描线上下移动频率
 
     // ── 能量粒子 ────────────────────────────────────────────
-    aura_count:       140,
-    aura_color:       0xff3030,
-    aura_size:        0.3,
-    aura_opacity:     0.85,
-    aura_margin:      0.5,
-    aura_z:           0.02,
-    aura_speed_min:   0.4,
-    aura_speed_range: 1.2,
-    aura_amp_min:     0.06,
-    aura_amp_range:   0.18,
+    aura_count:       140,          // 粒子总数
+    aura_color:       0xff3030,     // 粒子颜色
+    aura_size:        0.4,          // 粒子点大小
+    aura_opacity:     0.85,         // 粒子透明度
+    aura_margin:      0.5,          // 粒子分布外扩边距 (相对角色边界)
+    aura_z:           0.02,         // 粒子层 Z 偏移 (正=前方)
+    aura_speed_min:   0.4,          // 粒子飘动最小速度
+    aura_speed_range: 1.2,          // 粒子飘动速度随机范围 (实际 = min + random * range)
+    aura_amp_min:     0.06,         // 粒子飘动最小振幅
+    aura_amp_range:   0.18,         // 粒子飘动振幅随机范围
 
     // ── 脉冲波纹 ────────────────────────────────────────────
-    pulse_freq:       1.2,
-    pulse_max:        5,
-    pulse_opacity:    1,
-    pulse_color:      0xff3030,
-    pulse_inner:      0.08,
-    pulse_outer:      0.18,
-    pulse_life_min:   1.6,
-    pulse_life_extra: 0.5,
+    pulse_freq:       2,            // 脉冲生成频率 (秒/个)
+    pulse_max:        5,            // 同时存在最大脉冲数
+    pulse_opacity:    1,            // 脉冲透明度
+    pulse_color:      0xff3030,     // 脉冲颜色
+    pulse_inner:      0.15,         // 脉冲环内半径 (越大中心孔越大)
+    pulse_outer:      0.2,         // 脉冲环外半径 (越大环越粗/整体越大)
+    pulse_life_min:   2,          // 脉冲最短生命周期 (秒)
+    pulse_life_extra: 0.5,          // 脉冲生命周期随机增量 (实际 = min + random * extra)
+    pulse_scale_base: 0.3,          // 脉冲初始缩放
+    pulse_scale_grow: 10,           // 脉冲扩散倍率 (越大扩散越快越远)
+    pulse_y_offset:   0.3,          // 脉冲生成位置向上偏移 (正值=往上, 避免遮罩遮挡)
+    pulse_pitch_amp:  -15,             // 脉冲环倾斜偏移角度
 
     // ── 电路纹路 ────────────────────────────────────────────
-    circuit_count:    8,
-    circuit_opacity:  0.5,
-    circuit_line_clr: 0xaa2222,
-    circuit_pad_clr:  0xcc3333,
-    circuit_via_clr:  0xbb3333,
-    circuit_via_in:   0.04,
-    circuit_via_out:  0.07,
-    circuit_pad_r:    0.06,
-    circuit_seg_min:  3,
-    circuit_seg_range:4,
-    circuit_len_min:  0.5,
-    circuit_len_range:2.0,
+    circuit_count:    8,            // 电路走线数量
+    circuit_opacity:  0.5,          // 电路整体透明度
+    circuit_line_clr: 0xaa2222,     // 走线颜色
+    circuit_pad_clr:  0xcc3333,     // 端点焊盘颜色
+    circuit_via_clr:  0xbb3333,     // 转角过孔颜色
+    circuit_via_in:   0.04,         // 过孔内半径
+    circuit_via_out:  0.07,         // 过孔外半径
+    circuit_pad_r:    0.06,         // 焊盘半径
+    circuit_seg_min:  3,            // 每条走线最少分段数
+    circuit_seg_range:4,            // 分段数随机增量 (实际 = min + random * range)
+    circuit_len_min:  0.5,          // 每段最短长度
+    circuit_len_range:2.0,          // 每段长度随机增量
 
     // ── 纹理故障 ────────────────────────────────────────────
-    glitch_freq:      0.004,
-    glitch_x_amp:     0.04,
-    glitch_y_amp:     0.024,
-    glitch_dur_min:   40,
-    glitch_dur_range: 60,
+    glitch_freq:      0.004,        // 故障触发概率 (每帧)
+    glitch_x_amp:     0.04,         // 故障水平抖动幅度
+    glitch_y_amp:     0.024,        // 故障垂直抖动幅度
+    glitch_dur_min:   40,           // 故障最短持续时间 (ms)
+    glitch_dur_range: 60,           // 故障持续时间随机增量 (ms)
 
     // ── 人物动画 ────────────────────────────────────────────
-    sway_amp:         0.08,
-    sway_freq:        1.5,
-    scale_amp:        0.015,
-    scale_freq:       2.0,
+    sway_amp:         0.05,         // 角色上下浮动幅度 (世界单位)
+    sway_freq:        1.5,          // 角色上下浮动频率
+    scale_amp:        0.015,        // 角色呼吸缩放幅度
+    scale_freq:       2.0,          // 角色呼吸缩放频率
+
+    // ── 层次动画: 不同深度层独立轨迹偏差, 营造层次感 ────────
+    // 相位越大 = 滞后越明显; 振幅 = 该层偏离角色的幅度
+    layer_glow_phase:   1.8,        // 辉光 Y 偏移相位 (最深背景)
+    layer_glow_amp:     0.08,       // 辉光 Y 偏移振幅
+    layer_glow_scale:   0.03,       // 辉光自身缩放呼吸幅度
+    layer_aura_phase:   0.9,        // 粒子群 Y 偏移相位 (中景)
+    layer_aura_amp:     0.06,       // 粒子群 Y 偏移振幅
+    layer_aura_scale:   0.025,      // 粒子群自身缩放呼吸幅度
+    layer_circuit_phase:2.5,        // 电路纹路 Y 偏移相位 (较深背景)
+    layer_circuit_amp:  0.07,       // 电路纹路 Y 偏移振幅
+
+    // z 轴漂移 (前后浮动营造深度感)
+    layer_glow_z_freq:      0.8,    // 辉光 Z 漂移频率
+    layer_glow_z_amp:       0.015,  // 辉光 Z 漂移幅度
+    layer_aura_z_freq:      0.7,    // 粒子群 Z 漂移频率
+    layer_aura_z_amp:       0.012,  // 粒子群 Z 漂移幅度
+    layer_circuit_z_freq:   0.55,   // 电路纹路 Z 漂移频率
+    layer_circuit_z_amp:    0.01,   // 电路纹路 Z 漂移幅度
+
+    // 电路线微相位缩放系数 (复用 per-line 随机相位时的倍率)
+    circuit_y_phase_factor: 0.5,    // Y 轴偏移使用的相位缩放
+    circuit_z_phase_factor: 0.4,    // Z 轴漂移使用的相位缩放
 
     // ── 视角 ────────────────────────────────────────────────
-    pitch_deg:        -5,   // 俯视角度 (负 = 上往下)
-    yaw_deg:          0,    // 水平旋转 (0 = 正面)
+    pitch_deg:        0,           // 俯视角度 (负 = 上往下, 值越大越俯视)
+    yaw_deg:          0,            // 水平旋转 (0 = 正面)
 };
 
 // ============================================================
@@ -141,6 +172,23 @@ export default function createModel(group) {
         side: THREE.DoubleSide,
         transparent: true,
     });
+
+    // 底部渐隐遮罩: Canvas 垂直渐变 → alphaMap, 让底边不是生硬直线
+    const maskCanvas = document.createElement('canvas');
+    maskCanvas.width = 1;
+    maskCanvas.height = C.mask_resolution;
+    const mctx = maskCanvas.getContext('2d');
+    const mGradient = mctx.createLinearGradient(0, 0, 0, maskCanvas.height);
+    mGradient.addColorStop(0, 'white');                       // 顶部 = 不透明
+    mGradient.addColorStop(C.mask_opaque_ratio, 'white');     // 不透明截止点
+    mGradient.addColorStop(1, 'black');                       // 底部 = 完全透明
+    mctx.fillStyle = mGradient;
+    mctx.fillRect(0, 0, 1, maskCanvas.height);
+    const alphaMapTex = new THREE.CanvasTexture(maskCanvas);
+    alphaMapTex.minFilter = THREE.LinearFilter;
+    charMat.alphaMap = alphaMapTex;
+    charMat.needsUpdate = true;
+
     const characterMesh = new THREE.Mesh(charGeo, charMat);
     characterMesh.position.y = 0;
     group.add(characterMesh);
@@ -286,8 +334,8 @@ export default function createModel(group) {
             depthWrite: false,
         });
         const ring = new THREE.Mesh(geo, mat);
-        ring.rotation.x = -Math.PI / 2;
-        ring.position.y = -PH / 2;
+        ring.rotation.x = Math.PI / 2 + THREE.MathUtils.degToRad(C.pulse_pitch_amp);  // 水平 + 手动偏移
+        ring.position.y = -PH / 2 + C.pulse_y_offset;
         ring.position.z = 0.03;
         ring.userData = { life: 0, maxLife: C.pulse_life_min + Math.random() * C.pulse_life_extra };
         characterMesh.add(ring);
@@ -446,6 +494,28 @@ export default function createModel(group) {
         const sway = 1 + Math.sin(t * C.scale_freq) * C.scale_amp;
         characterMesh.scale.set(sway, sway, sway);
 
+        // --- 层次轨迹偏差: 各深度层以不同相位/振幅独立偏移动画 ---
+        // 辉光 (最深背景 z=-0.03, 滞后最明显 + 独立缩放呼吸 + z轴漂移)
+        edgeGlowMesh.position.y = Math.sin(t * C.sway_freq + C.layer_glow_phase) * C.layer_glow_amp;
+        const glowScale = 1 + Math.sin(t * C.scale_freq + C.layer_glow_phase) * C.layer_glow_scale;
+        edgeGlowMesh.scale.set(glowScale, glowScale, glowScale);
+        edgeGlowMesh.position.z = C.glow_z + Math.sin(t * C.layer_glow_z_freq) * C.layer_glow_z_amp;
+        // 粒子群 (中景 z=0.02, 滞后 + 独立缩放呼吸 + z轴漂移)
+        auraPoints.position.y = Math.sin(t * C.sway_freq + C.layer_aura_phase) * C.layer_aura_amp;
+        const auraGroupScale = 1 + Math.sin(t * C.scale_freq + C.layer_aura_phase) * C.layer_aura_scale;
+        auraPoints.scale.setScalar(auraGroupScale);
+        auraPoints.position.z = C.aura_z + Math.sin(t * C.layer_aura_z_freq + C.layer_aura_phase) * C.layer_aura_z_amp;
+        // 电路纹路 (较深背景 z=-0.02, 每条线保留独立的微相位差异 + z轴漂移)
+        for (let i = 0; i < circuitLines.length; i++) {
+            const l = circuitLines[i];
+            l.position.y = Math.sin(
+                t * C.sway_freq + C.layer_circuit_phase + l.userData.phase * C.circuit_y_phase_factor,
+            ) * C.layer_circuit_amp;
+            l.position.z = Math.sin(
+                t * C.layer_circuit_z_freq + l.userData.phase * C.circuit_z_phase_factor,
+            ) * C.layer_circuit_z_amp;
+        }
+
         // --- 边缘辉光呼吸 ---
         edgeGlowMat.opacity = C.glow_opacity * (0.5 + Math.sin(t * 1.5) * 0.4);
 
@@ -481,7 +551,7 @@ export default function createModel(group) {
                 pulseRings.splice(i, 1);
                 continue;
             }
-            const s = 0.3 + p * 5;
+            const s = C.pulse_scale_base + p * C.pulse_scale_grow;
             ring.scale.set(s, s, s);
             ring.material.opacity = C.pulse_opacity * (1 - p);
         }
@@ -510,6 +580,7 @@ export default function createModel(group) {
     function dispose() {
         charGeo.dispose();
         if (charMat.map) charMat.map.dispose();
+        if (charMat.alphaMap) charMat.alphaMap.dispose();
         charMat.dispose();
 
         edgeGlowGeo.dispose();
