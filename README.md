@@ -2,7 +2,7 @@
 
 A cute (Q-version) desktop 3D black hole widget — drag files into it to delete them.
 
-![screenshot](public/BlackHoleWidget-Q-version.png)
+![screenshot](screenshots/BlackHoleWidget-Q-version.webp)
 
 ## Features
 
@@ -120,7 +120,8 @@ Q版 桌面 3D 黑洞小组件 — 将文件拖入黑洞即可删除。
 - 窗口可拖拽移动位置
 
 ## 截图
-![screenshot](public/BlackHoleWidget-Q-version.png)
+
+![screenshot](screenshots/BlackHoleWidget-Q-version.webp)
 
 ## 环境要求
 
