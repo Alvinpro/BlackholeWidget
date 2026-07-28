@@ -36,6 +36,10 @@ pub fn get_models() -> Vec<ModelInfo> {
             id: "model-5".to_string(),
             name: "模型5号".to_string(),
         },
+        ModelInfo {
+            id: "model-6".to_string(),
+            name: "模型6号".to_string(),
+        },
     ]
 }
 

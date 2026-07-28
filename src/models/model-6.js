@@ -1,6 +1,12 @@
 import * as THREE from 'three';
+import datUrl from '../assets/model-6.dat?url';
 
-import datUrl from '../assets/model-5.dat?url';
+// png 模式: Vite lazy glob (不打包进 dist, 仅 dev 按需加载)
+const pngFrameModules = import.meta.glob('../assets/model-6-frames/frame_*.png', { import: 'default' });
+
+// 运行时帧数据 (dat 模式动态填充, png 模式懒加载)
+let frameUrls = [];
+let frameCount = 0;
 
 // ============================================================
 // === 可调参数 — 集中管理, 方便修改 ==========================
@@ -121,6 +127,10 @@ const CONFIG = {
     pitch_deg:        0,           // 俯视角度 (负 = 上往下, 值越大越俯视)
     yaw_deg:          0,            // 水平旋转 (0 = 正面)
 
+    // ── 帧动画 (仅模型6号) ──────────────────────────────────
+    frame_source:     'dat',         // 帧数据来源: 'dat' (压缩包) 或 'png' (独立文件)
+    frame_fps:        15,            // 帧动画播放速率 (帧/秒)
+
     // ── 效果开关 (true=开启, false=关闭) ────────────────────
     fx_lights:        true,         // 6 光源系统
     fx_glow:          true,         // 边缘辉光
@@ -128,9 +138,9 @@ const CONFIG = {
     fx_aura:          true,         // 能量粒子光晕
     fx_pulse:         true,         // 脉冲波纹
     fx_circuit:       true,         // 电路纹路
-    fx_glitch:        true,         // 纹理故障
+    fx_glitch:        false,         // 纹理故障
     fx_mask:          true,         // 底部遮罩
-    fx_layers:        true,         // 层次动画偏移
+    fx_layers:        false,         // 层次动画偏移
     fx_sway:          true,         // 人物微动 (浮动 + 呼吸缩放)
 };
 
@@ -138,7 +148,7 @@ const CONFIG = {
 // ============================================================
 
 /**
- * 模型5号 - 数字角色 (Digi-Girl)
+ * 模型6号 - 数字角色 (Digi-Girl)
  *
  * 融合 DigiTwins 项目的光源系统与人物特效,
  * 遵循现有模型架构的 createModel(group) → { setGlow, animate, dispose } 模式.
@@ -206,30 +216,67 @@ export default function createModel(group) {
     characterMesh.position.y = 0;
     group.add(characterMesh);
 
-    // 异步加载纹理
+    // 帧动画纹理加载
+    const frameTextures = [];
+    let currentFrame = 0;
+    let frameTimer = 0;
     const textureLoader = new THREE.TextureLoader();
-    textureLoader.load(
-        textureUrl,
-        (tex) => {
+
+    function loadFrame(index) {
+        if (index >= frameCount) return;
+        textureLoader.load(frameUrls[index], (tex) => {
             tex.colorSpace = THREE.SRGBColorSpace;
-            charMat.map = tex;
-            charMat.color.set(0xffffff);
-            charMat.needsUpdate = true;
+            frameTextures[index] = tex;
+            if (index === 0) {
+                charMat.map = tex;
+                charMat.color.set(0xffffff);
+                charMat.needsUpdate = true;
+                const actualRatio = tex.image.width / tex.image.height;
+                PH = PW / actualRatio;
+                charGeo.dispose();
+                characterMesh.geometry = new THREE.PlaneGeometry(PW, PH);
+                rebuildSizeDependentEffects();
+            }
+            if (index < frameCount - 1) loadFrame(index + 1);
+        }, undefined, () => {
+            if (index === 0) console.warn('模型6号: 帧纹理加载失败, 使用占位渲染');
+        });
+    }
+    (async function initFrames() {
+        if (C.frame_source === 'dat') {
+            try {
+                const resp = await fetch(datUrl);
+                const blob = await resp.blob();
+                const ds = new DecompressionStream('gzip');
+                const decompressed = await new Response(blob.stream().pipeThrough(ds)).arrayBuffer();
+                const view = new DataView(decompressed);
 
-            // 按实际图片比例更新平面高度
-            const actualRatio = tex.image.width / tex.image.height;
-            PH = PW / actualRatio;
-            charGeo.dispose();
-            characterMesh.geometry = new THREE.PlaneGeometry(PW, PH);
-
-            // 重建宽高相关的特效几何体
-            rebuildSizeDependentEffects();
-        },
-        undefined,
-        () => {
-            console.warn('模型5号: Digi-Girl_480.png 纹理加载失败, 使用占位渲染');
-        },
-    );
+                frameCount = view.getUint16(0, true);
+                let offset = 2;
+                for (let i = 0; i < frameCount; i++) {
+                    const len = view.getUint32(offset, true);
+                    offset += 4;
+                    const frameBytes = decompressed.slice(offset, offset + len);
+                    offset += len;
+                    frameUrls[i] = URL.createObjectURL(new Blob([frameBytes], { type: 'image/webp' }));
+                }
+            } catch (e) {
+                console.error('模型6号: .dat 加载失败, 回退到 png 模式', e);
+                const entries = Object.entries(pngFrameModules).sort(([a], [b]) => a.localeCompare(b));
+                if (entries.length > 0) {
+                    frameUrls = await Promise.all(entries.map(([, l]) => l()));
+                    frameCount = frameUrls.length;
+                }
+            }
+        } else {
+            const entries = Object.entries(pngFrameModules).sort(([a], [b]) => a.localeCompare(b));
+            if (entries.length > 0) {
+                frameUrls = await Promise.all(entries.map(([, l]) => l()));
+                frameCount = frameUrls.length;
+            }
+        }
+        loadFrame(0);
+    })();
 
     // ====================================================================
     // 3. 边缘辉光 (Canvas 径向渐变纹理)
@@ -502,6 +549,16 @@ export default function createModel(group) {
     function animate(elapsed) {
         const t = elapsed * 0.001;
 
+        frameTimer += 0.016;
+        if (frameTimer >= 1 / C.frame_fps && frameTextures.length > 0) {
+            frameTimer -= 1 / C.frame_fps;
+            currentFrame = (currentFrame + 1) % frameCount;
+            if (frameTextures[currentFrame]) {
+                charMat.map = frameTextures[currentFrame];
+                charMat.needsUpdate = true;
+            }
+        }
+
         if (C.fx_sway) {         // --- 角色微动 ---
         characterMesh.position.y = Math.sin(t * C.sway_freq) * C.sway_amp;
         const sway = 1 + Math.sin(t * C.scale_freq) * C.scale_amp;
@@ -595,7 +652,7 @@ export default function createModel(group) {
 
     function dispose() {
         charGeo.dispose();
-        if (charMat.map) charMat.map.dispose();
+        frameTextures.forEach((t) => { if (t) t.dispose(); });
         if (charMat.alphaMap) charMat.alphaMap.dispose();
         charMat.dispose();
 
