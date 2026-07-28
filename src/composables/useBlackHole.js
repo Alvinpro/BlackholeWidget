@@ -77,20 +77,26 @@ export function useBlackHole(containerRef) {
     async function switchModel(modelId) {
         if (currentModelId.value === modelId) return;
 
-        // Dispose old model
-        if (modelInstance) {
-            modelInstance.dispose();
-            // Clear all children from holeGroup
-            while (holeGroup.children.length > 0) {
-                holeGroup.remove(holeGroup.children[0]);
+        // Snapshot old model state BEFORE loading new one.
+        // This keeps the old model visible during the async load,
+        // avoiding an empty scene gap that causes a black flash.
+        const oldInstance = modelInstance;
+        const oldChildren = modelInstance ? [...holeGroup.children] : [];
+
+        // Load new model (adds its children to holeGroup alongside old ones)
+        await loadAndCreateModel(modelId);
+
+        // Now safely dispose the old model and remove its children
+        if (oldInstance) {
+            oldInstance.dispose();
+            for (const child of oldChildren) {
+                holeGroup.remove(child);
             }
         }
 
-        // Reset group rotation so the new model can set its own
+        // Reset rotation after old model is gone
         holeGroup.rotation.set(0, 0, 0);
 
-        // Load and create new model
-        await loadAndCreateModel(modelId);
         currentModelId.value = modelId;
 
         // Reset glow state for new model

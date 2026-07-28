@@ -214,6 +214,7 @@ export default function createModel(group) {
 
     const characterMesh = new THREE.Mesh(charGeo, charMat);
     characterMesh.position.y = 0;
+    characterMesh.visible = false; // 纹理异步加载完成前不可见
     group.add(characterMesh);
 
     // 帧动画纹理加载
@@ -236,6 +237,7 @@ export default function createModel(group) {
                 charGeo.dispose();
                 characterMesh.geometry = new THREE.PlaneGeometry(PW, PH);
                 rebuildSizeDependentEffects();
+                characterMesh.visible = true;
             }
             if (index < frameCount - 1) loadFrame(index + 1);
         }, undefined, () => {

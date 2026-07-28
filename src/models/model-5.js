@@ -204,6 +204,7 @@ export default function createModel(group) {
 
     const characterMesh = new THREE.Mesh(charGeo, charMat);
     characterMesh.position.y = 0;
+    characterMesh.visible = false; // 纹理异步加载完成前不可见
     group.add(characterMesh);
 
     // 异步加载纹理: 解压 .dat (gzip) → WebP Blob URL
@@ -232,6 +233,7 @@ export default function createModel(group) {
 
                     // 重建宽高相关的特效几何体
                     rebuildSizeDependentEffects();
+                    characterMesh.visible = true;
                 },
                 undefined,
                 () => {
