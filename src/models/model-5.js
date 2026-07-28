@@ -206,30 +206,42 @@ export default function createModel(group) {
     characterMesh.position.y = 0;
     group.add(characterMesh);
 
-    // 异步加载纹理
+    // 异步加载纹理: 解压 .dat (gzip) → WebP Blob URL
     const textureLoader = new THREE.TextureLoader();
-    textureLoader.load(
-        textureUrl,
-        (tex) => {
-            tex.colorSpace = THREE.SRGBColorSpace;
-            charMat.map = tex;
-            charMat.color.set(0xffffff);
-            charMat.needsUpdate = true;
+    (async function loadTexture() {
+        try {
+            const resp = await fetch(datUrl);
+            const blob = await resp.blob();
+            const ds = new DecompressionStream("gzip");
+            const decompressed = await new Response(blob.stream().pipeThrough(ds)).arrayBuffer();
+            const webpBlobUrl = URL.createObjectURL(new Blob([decompressed], { type: "image/webp" }));
 
-            // 按实际图片比例更新平面高度
-            const actualRatio = tex.image.width / tex.image.height;
-            PH = PW / actualRatio;
-            charGeo.dispose();
-            characterMesh.geometry = new THREE.PlaneGeometry(PW, PH);
+            textureLoader.load(
+                webpBlobUrl,
+                (tex) => {
+                    tex.colorSpace = THREE.SRGBColorSpace;
+                    charMat.map = tex;
+                    charMat.color.set(0xffffff);
+                    charMat.needsUpdate = true;
 
-            // 重建宽高相关的特效几何体
-            rebuildSizeDependentEffects();
-        },
-        undefined,
-        () => {
-            console.warn('模型5号: Digi-Girl_480.png 纹理加载失败, 使用占位渲染');
-        },
-    );
+                    // 按实际图片比例更新平面高度
+                    const actualRatio = tex.image.width / tex.image.height;
+                    PH = PW / actualRatio;
+                    charGeo.dispose();
+                    characterMesh.geometry = new THREE.PlaneGeometry(PW, PH);
+
+                    // 重建宽高相关的特效几何体
+                    rebuildSizeDependentEffects();
+                },
+                undefined,
+                () => {
+                    console.warn('模型5号: WebP 纹理加载失败, 使用占位渲染');
+                },
+            );
+        } catch (e) {
+            console.error('模型5号: .dat 解压失败', e);
+        }
+    })();
 
     // ====================================================================
     // 3. 边缘辉光 (Canvas 径向渐变纹理)
