@@ -50,31 +50,43 @@ The built executable is at `src-tauri/target/release/blackhole-widget.exe` — r
 
 ```
 BlackholeWidget/
+├── screenshots/             # README screenshots
 ├── src/                     # Vue frontend
 │   ├── App.vue              # Main window (Three.js canvas + drag overlay)
 │   ├── SettingsApp.vue      # Settings window
+│   ├── settings-main.js     # Settings entry point
+│   ├── assets/              # Static assets (textures, frames)
 │   ├── composables/
 │   │   ├── useBlackHole.js  # Three.js scene and animation
 │   │   └── useFileDrop.js   # File drag-drop event handling
 │   ├── models/              # 3D model definitions
 │   │   ├── index.js         # Model registry
 │   │   ├── model-1.js       # Model 1 (purple theme)
-│   │   ├── model-2.js       # Model 2 (shimmering gold theme)
+│   │   ├── model-2.js       # Model 2 (gold theme)
 │   │   ├── model-3.js       # Model 3 (ice-blue theme)
 │   │   ├── model-4.js       # Model 4 (ray-traced Schwarzschild lens)
-│   │   └── model-5.js       # Model 5 (Digi-Girl digital character)
-│   └── shaders/             # GLSL shaders
+│   │   ├── model-5.js       # Model 5 (Digi-Girl digital character)
+│   │   └── model-6.js       # Model 6 (Digi-Girl, animated)
+│   ├── shaders/             # GLSL shaders
+│   └── styles/              # CSS styles
 ├── src-tauri/               # Tauri / Rust backend
 │   └── src/
 │       ├── main.rs          # Entry point + command registration
 │       ├── tray.rs          # System tray + menu
 │       ├── config.rs        # Settings I/O
 │       └── file_ops.rs      # File deletion logic
-├── release.ps1              # One-click release script
+├── utils/                   # Miscellaneous utilities
+├── index.html               # Main window entry
+├── settings.html            # Settings window entry
+├── vite.config.js
 └── package.json
 ```
 
 ## Changelog
+
+### v0.1.4
+
+- **Model 6** (new): Digi-Girl digital character (animated)
 
 ### v0.1.3
 
@@ -159,31 +171,43 @@ npm run tauri build
 
 ```
 BlackholeWidget/
+├── screenshots/             # README 截图
 ├── src/                     # Vue 前端
 │   ├── App.vue              # 主窗口（Three.js 画布 + 拖放叠加层）
 │   ├── SettingsApp.vue      # 设置窗口
+│   ├── settings-main.js     # 设置入口
+│   ├── assets/              # 静态资源（纹理、帧图）
 │   ├── composables/
 │   │   ├── useBlackHole.js  # Three.js 场景和动画
 │   │   └── useFileDrop.js   # 文件拖放事件处理
 │   ├── models/              # 3D 模型定义
 │   │   ├── index.js         # 模型注册表
 │   │   ├── model-1.js       # 模型1号（紫色主题）
-│   │   ├── model-2.js       # 模型2号（闪闪金色主题）
+│   │   ├── model-2.js       # 模型2号（金色主题）
 │   │   ├── model-3.js       # 模型3号（冰蓝主题）
-│   │   └── model-4.js       # 模型4号（施瓦西射线追踪透镜）
-│   │   └── model-5.js       # 模型5号（Digi-Girl 数字角色）
-│   └── shaders/             # GLSL 着色器
+│   │   ├── model-4.js       # 模型4号（施瓦西射线追踪透镜）
+│   │   ├── model-5.js       # 模型5号（Digi-Girl 数字角色）
+│   │   └── model-6.js       # 模型6号（Digi-Girl，动态版本）
+│   ├── shaders/             # GLSL 着色器
+│   └── styles/              # CSS 样式
 ├── src-tauri/               # Tauri / Rust 后端
 │   └── src/
 │       ├── main.rs          # 入口 + 命令注册
 │       ├── tray.rs          # 系统托盘 + 菜单
 │       ├── config.rs        # 设置读写
 │       └── file_ops.rs      # 文件删除逻辑
-├── release.ps1              # 一键发布脚本
+├── utils/                   # 杂项工具
+├── index.html               # 主窗口入口
+├── settings.html            # 设置窗口入口
+├── vite.config.js
 └── package.json
 ```
 
 ## 更新日志
+
+### v0.1.4
+
+- **模型6号**（新增）：Digi-Girl 数字角色（动态）
 
 ### v0.1.3
 
