@@ -18,6 +18,11 @@ export function useBlackHole(containerRef) {
     let prevMouseX = 0;
     let prevMouseY = 0;
 
+    // Inertia state (EMA-smoothed velocity, 释放后持续旋转并衰减)
+    let velocityX = 0;
+    let velocityY = 0;
+    let lastMoveTime = 0;
+
     function init(modelId) {
         const id = modelId || DEFAULT_MODEL;
         currentModelId.value = id;
@@ -68,14 +73,15 @@ export function useBlackHole(containerRef) {
         });
     }
 
-    async function loadAndCreateModel(modelId) {
-        const module = await loadModel(modelId);
+    async function loadAndCreateModel(modelId, params) {
+        const module = await loadModel(modelId, params);
         const createModel = module.default;
-        modelInstance = createModel(holeGroup);
+        modelInstance = createModel(holeGroup, params);
     }
 
-    async function switchModel(modelId) {
-        if (currentModelId.value === modelId) return;
+    async function switchModel(modelId, params) {
+        // 允许同一模型 ID 带参数重新加载（如模型X号选择新文件）
+        if (currentModelId.value === modelId && !params) return;
 
         // Snapshot old model state BEFORE loading new one.
         // This keeps the old model visible during the async load,
@@ -84,7 +90,7 @@ export function useBlackHole(containerRef) {
         const oldChildren = modelInstance ? [...holeGroup.children] : [];
 
         // Load new model (adds its children to holeGroup alongside old ones)
-        await loadAndCreateModel(modelId);
+        await loadAndCreateModel(modelId, params);
 
         // Now safely dispose the old model and remove its children
         if (oldInstance) {
@@ -94,8 +100,10 @@ export function useBlackHole(containerRef) {
             }
         }
 
-        // Reset rotation after old model is gone
+        // Reset rotation and inertia after old model is gone
         holeGroup.rotation.set(0, 0, 0);
+        velocityX = 0;
+        velocityY = 0;
 
         currentModelId.value = modelId;
 
@@ -125,9 +133,23 @@ export function useBlackHole(containerRef) {
             modelInstance.setGlow(currentGlow);
         }
 
-        // Auto-rotate only when not right-dragging and model allows it
-        if (holeGroup && !isRightDragging && modelInstance?.autoRotate !== false) {
-            holeGroup.rotation.y += 0.003;
+        // Inertia / auto-rotate: 释放右键后按拖拽速度惯性旋转
+        // - 普通模型：速度衰减至阈值后切换为默认 Y 轴自转
+        // - autoRotate:false 的模型（如模型X号）：释放后以释放速度持续旋转，不衰减
+        if (holeGroup && !isRightDragging) {
+            const speed = Math.sqrt(velocityX * velocityX + velocityY * velocityY);
+            if (speed > 0.00005) {
+                holeGroup.rotation.x += velocityX;
+                holeGroup.rotation.y += velocityY;
+                if (modelInstance?.autoRotate !== false) {
+                    // 普通模型：指数衰减，约 17 帧(0.3s) 速度减半
+                    velocityX *= 0.96;
+                    velocityY *= 0.96;
+                }
+                // autoRotate:false 的模型：不衰减，维持释放速度永久自转
+            } else if (modelInstance?.autoRotate !== false) {
+                holeGroup.rotation.y += 0.003;
+            }
         }
 
         // Delegate model-specific animation
@@ -139,12 +161,15 @@ export function useBlackHole(containerRef) {
         renderer.render(scene, camera);
     }
 
-    // --- Right-click drag to rotate the 3D model ---
+    // --- Right-click drag to rotate the 3D model (with inertia) ---
     function onRightMouseDown(e) {
         if (e.button === 2) {
             isRightDragging = true;
             prevMouseX = e.clientX;
             prevMouseY = e.clientY;
+            velocityX = 0;
+            velocityY = 0;
+            lastMoveTime = performance.now();
             e.preventDefault();
             e.stopPropagation();
         }
@@ -154,14 +179,29 @@ export function useBlackHole(containerRef) {
         if (!isRightDragging || !holeGroup) return;
         const dx = e.clientX - prevMouseX;
         const dy = e.clientY - prevMouseY;
-        holeGroup.rotation.y += dx * 0.01;
+        const now = performance.now();
+        const dt = now - lastMoveTime;
+
         holeGroup.rotation.x += dy * 0.01;
+        holeGroup.rotation.y += dx * 0.01;
+
+        // 计算瞬时角速度（归一化到 ~16ms 帧），EMA 平滑避免抖动
+        if (dt > 0 && dt < 100) {
+            const normDt = dt / 16;
+            const instVX = dy * 0.01 / normDt;
+            const instVY = dx * 0.01 / normDt;
+            velocityX = velocityX * 0.6 + instVX * 0.4;
+            velocityY = velocityY * 0.6 + instVY * 0.4;
+        }
+
         prevMouseX = e.clientX;
         prevMouseY = e.clientY;
+        lastMoveTime = now;
     }
 
     function onRightMouseUp() {
         isRightDragging = false;
+        // 不归零 velocity，让 animate() 中的惯性逻辑接管
     }
 
     function preventContextMenu(e) {

@@ -27,6 +27,10 @@ const modelRegistry = {
         name: '模型6号',
         loader: () => import('./model-6.js'),
     },
+    'model-x': {
+        name: '模型X号',
+        loader: () => import('./model-x.js'),
+    },
 };
 
 /** 默认模型 ID */
@@ -41,11 +45,11 @@ export function getModelList() {
 }
 
 /** 加载指定模型 */
-export async function loadModel(id) {
+export async function loadModel(id, params) {
     const model = modelRegistry[id];
     if (!model) {
         console.warn(`模型 "${id}" 不存在，使用默认模型`);
         return modelRegistry[DEFAULT_MODEL].loader();
     }
-    return model.loader();
+    return model.loader(params);
 }

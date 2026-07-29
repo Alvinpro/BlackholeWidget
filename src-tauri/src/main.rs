@@ -6,6 +6,7 @@ mod tray;
 
 use serde::Serialize;
 use tauri::{Emitter, LogicalSize, Manager};
+use tauri::ipc::Response;
 
 #[derive(Debug, Serialize, Clone)]
 pub struct ModelInfo {
@@ -39,6 +40,10 @@ pub fn get_models() -> Vec<ModelInfo> {
         ModelInfo {
             id: "model-6".to_string(),
             name: "模型6号".to_string(),
+        },
+        ModelInfo {
+            id: "model-x".to_string(),
+            name: "模型X号".to_string(),
         },
     ]
 }
@@ -109,6 +114,19 @@ fn switch_model(app: tauri::AppHandle, model_id: String) -> Result<(), String> {
     Ok(())
 }
 
+#[tauri::command]
+fn load_glb_file(path: String) -> Result<Response, String> {
+    let data = std::fs::read(&path).map_err(|e| format!("读取文件失败: {}", e))?;
+    Ok(Response::new(data))
+}
+
+/// 仅更新托盘菜单勾选状态，不发射 model-changed、不修改持久化配置
+#[tauri::command]
+fn mark_tray_active(app: tauri::AppHandle, model_id: String) -> Result<(), String> {
+    tray::rebuild_tray_with_active(&app, &model_id)
+        .map_err(|e| format!("重建菜单失败: {}", e))
+}
+
 fn main() {
     tauri::Builder::default()
         .plugin(tauri_plugin_dialog::init())
@@ -134,6 +152,8 @@ fn main() {
             save_settings,
             get_models_list,
             switch_model,
+            load_glb_file,
+            mark_tray_active,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

@@ -78,6 +78,7 @@ function onMouseDown(e) {
 
 // --- Lifecycle ---
 let unlistenModelChange = null;
+let unlistenModelXFile = null;
 
 onMounted(async () => {
   // 读取持久化的活动模型
@@ -85,6 +86,10 @@ onMounted(async () => {
   try {
     const saved = await invoke('get_settings');
     activeModel = saved.active_model;
+    // model-x 依赖用户选择的文件，不可在重启后直接恢复
+    if (activeModel === 'model-x') {
+      activeModel = 'model-1';
+    }
   } catch (e) {
     console.error('读取设置失败:', e);
   }
@@ -97,6 +102,22 @@ onMounted(async () => {
     switchModel(event.payload);
   });
 
+  // Listen for model-x file selection from tray
+  unlistenModelXFile = await listen('model-x-file-selected', async (event) => {
+    const filePath = event.payload;
+    try {
+      // load_glb_file 返回原始二进制 ArrayBuffer，不经 JSON 序列化
+      const data = await invoke('load_glb_file', { path: filePath });
+      const blob = new Blob([data], { type: 'model/gltf-binary' });
+      const blobUrl = URL.createObjectURL(blob);
+      await switchModel('model-x', { fileUrl: blobUrl });
+      // 更新托盘勾选状态（不持久化 model-x 到配置）
+      await invoke('mark_tray_active', { modelId: 'model-x' });
+    } catch (e) {
+      console.error('模型X号: 加载 GLB 文件失败', e);
+    }
+  });
+
   // Listen for pulse events
   window.addEventListener('blackhole-pulse', triggerPulse);
 });
@@ -107,5 +128,6 @@ onUnmounted(() => {
   clearTimeout(pulseTimer);
   window.removeEventListener('blackhole-pulse', triggerPulse);
   if (unlistenModelChange) unlistenModelChange();
+  if (unlistenModelXFile) unlistenModelXFile();
 });
 </script>

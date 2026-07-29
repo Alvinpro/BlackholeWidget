@@ -6,6 +6,7 @@ use tauri::{
     AppHandle, Emitter, LogicalSize, Manager, Runtime, WebviewWindowBuilder,
 };
 use tauri_plugin_autostart::AutoLaunchManager;
+use tauri_plugin_dialog::DialogExt;
 
 /// Generate a simple 32x32 black-circle-with-purple-glow icon in memory
 fn tray_icon() -> Image<'static> {
@@ -49,13 +50,19 @@ fn active_model_id() -> String {
 /// Build a submenu for model switching
 fn build_model_submenu<R: Runtime>(
     app: &AppHandle<R>,
+    active_override: Option<&str>,
 ) -> tauri::Result<tauri::menu::Submenu<R>> {
     let models = crate::get_models();
-    let active_id = active_model_id();
+    let active_id = active_override.map(|s| s.to_string())
+        .unwrap_or_else(|| active_model_id());
 
     let mut submenu = SubmenuBuilder::new(app, "切换模型");
 
     for model in &models {
+        // 模型X号上方增加分隔线
+        if model.id == "model-x" {
+            submenu = submenu.separator();
+        }
         let is_active = model.id == active_id;
         let id = format!("model:{}", model.id);
         let item = CheckMenuItemBuilder::with_id(&id, &model.name)
@@ -72,6 +79,15 @@ fn build_menu<R: Runtime>(
     app: &AppHandle<R>,
     autostart_enabled: bool,
 ) -> tauri::Result<tauri::menu::Menu<R>> {
+    build_menu_inner(app, autostart_enabled, None)
+}
+
+/// Build a menu with an overridden active model (用于不持久化 model-x 的托盘勾选)
+fn build_menu_inner<R: Runtime>(
+    app: &AppHandle<R>,
+    autostart_enabled: bool,
+    active_override: Option<&str>,
+) -> tauri::Result<tauri::menu::Menu<R>> {
     let show_hide = MenuItemBuilder::with_id("show_hide", "显示/隐藏").build(app)?;
     let zoom_in = MenuItemBuilder::with_id("zoom_in", "放大窗口").build(app)?;
     let zoom_out = MenuItemBuilder::with_id("zoom_out", "缩小窗口").build(app)?;
@@ -81,7 +97,7 @@ fn build_menu<R: Runtime>(
     let settings = MenuItemBuilder::with_id("settings", "设置").build(app)?;
     let quit = MenuItemBuilder::with_id("quit", "退出").build(app)?;
 
-    let model_submenu = build_model_submenu(app)?;
+    let model_submenu = build_model_submenu(app, active_override)?;
 
     MenuBuilder::new(app)
         .item(&show_hide)
@@ -177,6 +193,25 @@ pub fn create_tray<R: Runtime>(app: &AppHandle<R>) -> tauri::Result<()> {
 }
 
 fn handle_model_switch<R: Runtime>(app: &AppHandle<R>, model_id: &str) {
+    // 模型X号：弹出文件对话框选择 .glb 文件，不走常规切换流程
+    if model_id == "model-x" {
+        let handle = app.clone();
+        app.dialog()
+            .file()
+            .add_filter("GLB 模型", &["glb"])
+            .pick_file(move |file_path| {
+                if let Some(path) = file_path {
+                    let path_str = path.as_path()
+                        .map(|p| p.to_string_lossy().to_string())
+                        .unwrap_or_default();
+                    if !path_str.is_empty() {
+                        let _ = handle.emit("model-x-file-selected", path_str);
+                    }
+                }
+            });
+        return;
+    }
+
     // 验证模型是否存在
     let models = crate::get_models();
     if !models.iter().any(|m| m.id == model_id) {
@@ -204,6 +239,15 @@ fn handle_model_switch<R: Runtime>(app: &AppHandle<R>, model_id: &str) {
 /// 重建托盘菜单（外部调用，如切换模型后更新选中状态）
 pub fn rebuild_tray<R: Runtime>(app: &AppHandle<R>) -> tauri::Result<()> {
     let new_menu = build_menu(app, autostart_enabled(app))?;
+    if let Some(tray) = app.tray_by_id("main-tray") {
+        tray.set_menu(Some(new_menu))?;
+    }
+    Ok(())
+}
+
+/// 重建托盘菜单并指定勾选模型（用于 model-x 等不持久化的模型）
+pub fn rebuild_tray_with_active<R: Runtime>(app: &AppHandle<R>, active_id: &str) -> tauri::Result<()> {
+    let new_menu = build_menu_inner(app, autostart_enabled(app), Some(active_id))?;
     if let Some(tray) = app.tray_by_id("main-tray") {
         tray.set_menu(Some(new_menu))?;
     }
