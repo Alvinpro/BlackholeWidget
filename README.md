@@ -84,6 +84,11 @@ BlackholeWidget/
 
 ## Changelog
 
+### v0.1.5
+
+- **Fix**: Implemented a local time accumulator for Model 4 to fix animation freezing when switching models.
+- **Tweak**: Fine-tuned lighting effects on Model 6.
+
 ### v0.1.4
 
 - **Model 6** (new): Digi-Girl digital character (animated)
@@ -204,6 +209,11 @@ BlackholeWidget/
 ```
 
 ## 更新日志
+
+### v0.1.5
+
+- **修复**：模型4号改用局部时间累加器，解决模型切换时模型4号的动画冻结问题
+- **微调**：模型6号微调了灯光效果
 
 ### v0.1.4
 
