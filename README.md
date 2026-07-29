@@ -9,8 +9,8 @@ A cute (Q-version) desktop 3D black hole widget — drag files into it to delete
 - 3D rotating black hole floating on your desktop (Three.js + Fresnel glow shader)
 - Drag files onto the black hole to delete them (recycle bin or permanent)
 - System tray menu: show/hide, zoom in/out, switch model, auto-start, settings, exit
-- Multiple 3D black hole models with hot-switching (purple, gold, ice-blue, ray-traced lens, and digital character)
-- Right-click drag to rotate the 3D view
+- Multiple 3D black hole models with hot-switching (purple, gold, ice-blue, ray-traced lens, digital character, and custom GLB)
+- Right-click drag to rotate the 3D view with inertia (release to auto-spin)
 - Settings window: confirm before delete, permanent delete toggle
 - Window is draggable to reposition
 
@@ -50,6 +50,7 @@ The built executable is at `src-tauri/target/release/blackhole-widget.exe` — r
 
 ```
 BlackholeWidget/
+├── model-x/                # Sample GLB models for Model X
 ├── screenshots/             # README screenshots
 ├── src/                     # Vue frontend
 │   ├── App.vue              # Main window (Three.js canvas + drag overlay)
@@ -66,7 +67,8 @@ BlackholeWidget/
 │   │   ├── model-3.js       # Model 3 (ice-blue theme)
 │   │   ├── model-4.js       # Model 4 (ray-traced Schwarzschild lens)
 │   │   ├── model-5.js       # Model 5 (Digi-Girl digital character)
-│   │   └── model-6.js       # Model 6 (Digi-Girl, animated)
+│   │   ├── model-6.js       # Model 6 (Digi-Girl, animated)
+│   │   └── model-x.js       # Model X (universal GLB loader)
 │   ├── shaders/             # GLSL shaders
 │   └── styles/              # CSS styles
 ├── src-tauri/               # Tauri / Rust backend
@@ -76,6 +78,7 @@ BlackholeWidget/
 │       ├── config.rs        # Settings I/O
 │       └── file_ops.rs      # File deletion logic
 ├── utils/                   # Miscellaneous utilities
+├── Model-X.md               # Model X usage guide (EN / ZH)
 ├── index.html               # Main window entry
 ├── settings.html            # Settings window entry
 ├── vite.config.js
@@ -83,6 +86,12 @@ BlackholeWidget/
 ```
 
 ## Changelog
+
+### v0.2.0
+
+- **Model X** (new): universal GLB model loader — select any `.glb` file via system tray to load and render with built-in animations
+- **Sample GLB models**: Earth Cartoon and Blackhole from Sketchfab (CC Attribution) included in `model-x/`
+- **Model X documentation**: usage guide with attribution in `Model-X.md`
 
 ### v0.1.5
 
@@ -131,8 +140,8 @@ Q版 桌面 3D 黑洞小组件 — 将文件拖入黑洞即可删除。
 - 3D 旋转黑洞悬浮在桌面上（Three.js + Fresnel 辉光着色器）
 - 将文件拖到黑洞上 → 删除到回收站（或永久删除）
 - 系统托盘菜单：显示/隐藏、放大/缩小、切换模型、开机启动、设置、退出
-- 多种 3D 黑洞模型可热切换（紫色、金色、冰蓝、射线追踪透镜、数字角色）
-- 右键拖拽旋转 3D 视角
+- 多种 3D 黑洞模型可热切换（紫色、金色、冰蓝、射线追踪透镜、数字角色、自定义 GLB）
+- 右键拖拽旋转 3D 视角，松开后惯性旋转
 - 设置窗口：删除前确认、永久删除开关
 - 窗口可拖拽移动位置
 
@@ -176,6 +185,7 @@ npm run tauri build
 
 ```
 BlackholeWidget/
+├── model-x/                # 模型X号示例 GLB 模型
 ├── screenshots/             # README 截图
 ├── src/                     # Vue 前端
 │   ├── App.vue              # 主窗口（Three.js 画布 + 拖放叠加层）
@@ -192,7 +202,8 @@ BlackholeWidget/
 │   │   ├── model-3.js       # 模型3号（冰蓝主题）
 │   │   ├── model-4.js       # 模型4号（施瓦西射线追踪透镜）
 │   │   ├── model-5.js       # 模型5号（Digi-Girl 数字角色）
-│   │   └── model-6.js       # 模型6号（Digi-Girl，动态版本）
+│   │   ├── model-6.js       # 模型6号（Digi-Girl，动态版本）
+│   │   └── model-x.js       # 模型X号（通用 GLB 加载器）
 │   ├── shaders/             # GLSL 着色器
 │   └── styles/              # CSS 样式
 ├── src-tauri/               # Tauri / Rust 后端
@@ -202,6 +213,7 @@ BlackholeWidget/
 │       ├── config.rs        # 设置读写
 │       └── file_ops.rs      # 文件删除逻辑
 ├── utils/                   # 杂项工具
+├── Model-X.md               # 模型X号使用说明（中英双语）
 ├── index.html               # 主窗口入口
 ├── settings.html            # 设置窗口入口
 ├── vite.config.js
@@ -209,6 +221,12 @@ BlackholeWidget/
 ```
 
 ## 更新日志
+
+### v0.2.0
+
+- **模型X号**（新增）：通用 GLB 模型加载器 — 通过系统托盘选择任意 `.glb` 文件，自动适配内建动画进行渲染
+- **示例 GLB 模型**：来自 Sketchfab 的 Earth Cartoon 和 Blackhole（CC Attribution），存放在 `model-x/`
+- **模型X号使用说明**：使用指南，含署名信息，见 `Model-X.md`
 
 ### v0.1.5
 
