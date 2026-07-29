@@ -14,7 +14,7 @@ let frameCount = 0;
 
 const CONFIG = {
     // ── 灯光 ────────────────────────────────────────────────
-    light_ambient:    { color: 0xffffff, intensity: 2.3 },                     // 环境光: 均匀照亮整个场景
+    light_ambient:    { color: 0xffffff, intensity: 3 },                     // 环境光: 均匀照亮整个场景
     light_key:        { color: 0xfff5e6, intensity: 0.6, x: 5, y: 6, z: 5 }, // 主补光: 模拟上方暖光源
     light_camera:     { color: 0xffffff, intensity: 2.0, distance: 20, x: 0, y: 3, z: 8 }, // 相机柔光: 正面补光
     light_rim:        { color: 0xff4444, intensity: 0.8, distance: 15, x: 0, y: 2.5, z: -6 }, // 轮廓光: 背后红色勾勒边缘

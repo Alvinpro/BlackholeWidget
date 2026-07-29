@@ -44,8 +44,24 @@ export default function createModel(group) {
         material.uniforms.u_glow.value = intensity;
     }
 
+    let localTime = 0;
+    let lastElapsed = null;
+
     function animate(elapsed) {
-        material.uniforms.u_time.value = elapsed * 0.001;
+        if (lastElapsed === null) {
+            lastElapsed = elapsed;
+        }
+        let delta = elapsed - lastElapsed;
+        lastElapsed = elapsed;
+
+        // 限制最大 delta，防止休眠唤醒时产生巨大跳跃
+        if (delta > 100) delta = 16.66;
+
+        // 累加局部时间并定期取模，避免全局 performance.now() 持续增长
+        // 导致传入 GLSL 后，超出 32 位浮点数精度而使动画永久静止
+        localTime = (localTime + delta * 0.001) % 3600;
+
+        material.uniforms.u_time.value = localTime;
 
         // 动态读取画布尺寸，确保窗口缩放时黑洞能自适应缩放并保持居中
         const canvas = document.querySelector('canvas');
