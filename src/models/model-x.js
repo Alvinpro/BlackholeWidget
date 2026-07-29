@@ -20,11 +20,22 @@ export default function createModel(group, params = {}) {
         };
     }
 
-    // ---- 环境光：确保 GLB 模型可见 ----
-    const ambient = new THREE.AmbientLight(0xffffff, 1.8);
-    const key = new THREE.DirectionalLight(0xffffff, 0.6);
-    key.position.set(5, 8, 8);
-    group.add(ambient, key);
+    // ---- 光照：多角度光源确保 PBR 材质模型正确渲染 ----
+    // 半球光：天空+地面模拟自然环境光
+    const hemi = new THREE.HemisphereLight(0xffffff, 0x444444, 1.2);
+    // 环境光：均匀基础照明
+    const ambient = new THREE.AmbientLight(0xffffff, 2.5);
+    // 主方向光（前上方）
+    const key = new THREE.DirectionalLight(0xffffff, 1.2);
+    key.position.set(3, 6, 6);
+    // 补光（侧方，消除暗面）
+    const fill = new THREE.DirectionalLight(0xffffff, 0.5);
+    fill.position.set(-4, 2, -2);
+    // 底部补光（减少底部全黑）
+    const rim = new THREE.DirectionalLight(0xffffff, 0.3);
+    rim.position.set(0, -3, 0);
+
+    group.add(hemi, ambient, key, fill, rim);
 
     // ---- 模型容器 ----
     const container = new THREE.Group();

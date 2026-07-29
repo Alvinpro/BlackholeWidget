@@ -22,6 +22,9 @@ export function useBlackHole(containerRef) {
     let velocityX = 0;
     let velocityY = 0;
     let lastMoveTime = 0;
+    // 滑动窗口：记录最近拖拽增量，用于释放时精确计算速度
+    const deltaHistory = [];
+    const DELTA_WINDOW_MS = 100;
 
     function init(modelId) {
         const id = modelId || DEFAULT_MODEL;
@@ -39,6 +42,9 @@ export function useBlackHole(containerRef) {
         renderer.setClearColor(0x000000, 0);
         renderer.setPixelRatio(window.devicePixelRatio);
         renderer.setSize(container.clientWidth, container.clientHeight);
+        renderer.outputColorSpace = THREE.SRGBColorSpace;
+        renderer.toneMapping = THREE.ACESFilmicToneMapping;
+        renderer.toneMappingExposure = 1.0;
         container.appendChild(renderer.domElement);
 
         // --- Scene ---
@@ -142,9 +148,9 @@ export function useBlackHole(containerRef) {
                 holeGroup.rotation.x += velocityX;
                 holeGroup.rotation.y += velocityY;
                 if (modelInstance?.autoRotate !== false) {
-                    // 普通模型：指数衰减，约 17 帧(0.3s) 速度减半
-                    velocityX *= 0.96;
-                    velocityY *= 0.96;
+                    // 普通模型：指数衰减，约 35 帧(0.6s) 速度减半
+                    velocityX *= 0.98;
+                    velocityY *= 0.98;
                 }
                 // autoRotate:false 的模型：不衰减，维持释放速度永久自转
             } else if (modelInstance?.autoRotate !== false) {
@@ -170,6 +176,7 @@ export function useBlackHole(containerRef) {
             velocityX = 0;
             velocityY = 0;
             lastMoveTime = performance.now();
+            deltaHistory.length = 0;
             e.preventDefault();
             e.stopPropagation();
         }
@@ -180,18 +187,14 @@ export function useBlackHole(containerRef) {
         const dx = e.clientX - prevMouseX;
         const dy = e.clientY - prevMouseY;
         const now = performance.now();
-        const dt = now - lastMoveTime;
 
         holeGroup.rotation.x += dy * 0.01;
         holeGroup.rotation.y += dx * 0.01;
 
-        // 计算瞬时角速度（归一化到 ~16ms 帧），EMA 平滑避免抖动
-        if (dt > 0 && dt < 100) {
-            const normDt = dt / 16;
-            const instVX = dy * 0.01 / normDt;
-            const instVY = dx * 0.01 / normDt;
-            velocityX = velocityX * 0.6 + instVX * 0.4;
-            velocityY = velocityY * 0.6 + instVY * 0.4;
+        // 记录移动增量用于释放时计算准确速度（滑动窗口，最近 ~100ms）
+        deltaHistory.push({ dx, dy, time: now });
+        while (deltaHistory.length > 1 && now - deltaHistory[0].time > DELTA_WINDOW_MS) {
+            deltaHistory.shift();
         }
 
         prevMouseX = e.clientX;
@@ -201,7 +204,33 @@ export function useBlackHole(containerRef) {
 
     function onRightMouseUp() {
         isRightDragging = false;
-        // 不归零 velocity，让 animate() 中的惯性逻辑接管
+
+        // 从滑动窗口中计算释放速度：总旋转量 / 时间 → 每帧角速度
+        const now = performance.now();
+        const recent = deltaHistory.filter(d => now - d.time <= DELTA_WINDOW_MS);
+        if (recent.length >= 2) {
+            const first = recent[0];
+            const last = recent[recent.length - 1];
+            const timeSpan = last.time - first.time;
+            if (timeSpan > 0) {
+                let sumDx = 0, sumDy = 0;
+                for (const d of recent) {
+                    sumDx += d.dx;
+                    sumDy += d.dy;
+                }
+                // 平均旋转速率 (rad/ms) × 16ms = 每帧角速度，与拖拽手感一致
+                const rotPerMsX = (sumDy * 0.01) / timeSpan;
+                const rotPerMsY = (sumDx * 0.01) / timeSpan;
+                velocityX = rotPerMsX * 16;
+                velocityY = rotPerMsY * 16;
+            }
+        }
+
+        // 静止释放：归零
+        if (now - lastMoveTime > 150) {
+            velocityX = 0;
+            velocityY = 0;
+        }
     }
 
     function preventContextMenu(e) {

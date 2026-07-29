@@ -32,6 +32,7 @@ lerna-debug.log*
 *.pyc
 __pycache__/
 release.ps1
+temp/
 
 # === Model-5, Model-6 素材 (仅用于生成 .dat, 不提交) ===
 src/assets/model-6-frames/
