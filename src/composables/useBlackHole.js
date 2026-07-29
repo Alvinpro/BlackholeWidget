@@ -208,6 +208,8 @@ export function useBlackHole(containerRef) {
     }
 
     function onRightMouseMove(e) {
+        // 只有右键实际按下时才处理（排除释放后惯性阶段的鼠标移动）
+        if (!(e.buttons & 2)) return;
         if (!holeGroup) return;
 
         const dx = e.clientX - prevMouseX;
