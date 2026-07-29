@@ -112,10 +112,14 @@ export function useBlackHole(containerRef) {
             }
         }
 
-        // Reset rotation and inertia after old model is gone
+        // Reset rotation, position, zoom and inertia after old model is gone
         holeGroup.rotation.set(0, 0, 0);
+        holeGroup.position.set(0, 0, 0);
         velocityX = 0;
         velocityY = 0;
+        cameraDistance = 8;
+        camera.position.set(0, 1.0, 8);
+        camera.lookAt(0, 0, 0);
 
         currentModelId.value = modelId;
 
