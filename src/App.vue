@@ -1,7 +1,6 @@
 <template>
   <div
     class="widget-container"
-    data-tauri-drag-region
     @mousedown="onMouseDown"
     @contextmenu.prevent
   >
@@ -69,11 +68,24 @@ function triggerPulse() {
 }
 
 // --- Window Dragging ---
+// 延迟到 mousemove 启动，允许右键在 mousedown 和 mousemove 之间按下以触发双键平移
+let dragPending = false;
+
 function onMouseDown(e) {
-  // Only handle left-click when not in a drag-drop operation
   if (e.button === 0 && !dropOverlay.value) {
+    dragPending = true;
+  }
+}
+
+function onGlobalMouseMove(e) {
+  if (dragPending && !(e.buttons & 2)) {
+    dragPending = false;
     getCurrentWindow().startDragging();
   }
+}
+
+function onGlobalMouseUp() {
+  dragPending = false;
 }
 
 // --- Lifecycle ---
@@ -96,6 +108,10 @@ onMounted(async () => {
 
   initBlackHole(activeModel);
   await initDrop();
+
+  // Window-level listeners for delayed drag and two-button pan
+  window.addEventListener('mousemove', onGlobalMouseMove);
+  window.addEventListener('mouseup', onGlobalMouseUp);
 
   // Listen for model switch events from tray menu
   unlistenModelChange = await listen('model-changed', (event) => {
@@ -127,6 +143,8 @@ onUnmounted(() => {
   cleanupDrop();
   clearTimeout(pulseTimer);
   window.removeEventListener('blackhole-pulse', triggerPulse);
+  window.removeEventListener('mousemove', onGlobalMouseMove);
+  window.removeEventListener('mouseup', onGlobalMouseUp);
   if (unlistenModelChange) unlistenModelChange();
   if (unlistenModelXFile) unlistenModelXFile();
 });

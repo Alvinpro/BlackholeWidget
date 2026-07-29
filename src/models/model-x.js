@@ -53,18 +53,22 @@ export default function createModel(group, params = {}) {
         (gltf) => {
             const model = gltf.scene;
 
-            // 自动适配：缩放模型到合适大小 (以包围盒为参考)
+            // 自动适配：以包围盒计算缩放与居中
             const box = new THREE.Box3().setFromObject(model);
             const size = box.getSize(new THREE.Vector3());
-            const maxDim = Math.max(size.x, size.y, size.z);
-            if (maxDim > 0) {
-                const targetScale = 5 / maxDim; // 模型最大维度映射到 5 个单位
-                model.scale.setScalar(targetScale);
-            }
-
-            // 居中模型
             const center = box.getCenter(new THREE.Vector3());
-            model.position.set(-center.x, -center.y, -center.z);
+            const maxDim = Math.max(size.x, size.y, size.z, 0.01);
+
+            // 缩放：最大维度不超过 4 单位（约占视口 60%，留余量适配高瘦模型）
+            const targetScale = 4 / maxDim;
+            model.scale.setScalar(targetScale);
+
+            // 居中：position 在 scale 之后生效，因此 center 也要乘 scale
+            model.position.set(
+                -center.x * targetScale,
+                -center.y * targetScale,
+                -center.z * targetScale
+            );
 
             container.add(model);
 

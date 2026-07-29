@@ -15,6 +15,7 @@ export function useBlackHole(containerRef) {
 
     // Right-click drag rotation state
     let isRightDragging = false;
+    let isPanning = false; // 左右双键按住时平移模型
     let prevMouseX = 0;
     let prevMouseY = 0;
 
@@ -25,6 +26,8 @@ export function useBlackHole(containerRef) {
     // 滑动窗口：记录最近拖拽增量，用于释放时精确计算速度
     const deltaHistory = [];
     const DELTA_WINDOW_MS = 100;
+    // 鼠标滚轮缩放
+    let cameraDistance = 8;
 
     function init(modelId) {
         const id = modelId || DEFAULT_MODEL;
@@ -67,11 +70,14 @@ export function useBlackHole(containerRef) {
         // --- Resize listener ---
         window.addEventListener('resize', onResize);
 
-        // --- Right-click drag rotation listeners ---
-        container.addEventListener('mousedown', onRightMouseDown);
+        // --- Right-click drag / both-button pan listeners ---
+        container.addEventListener('mousedown', onCanvasMouseDown);
         container.addEventListener('contextmenu', preventContextMenu);
         window.addEventListener('mousemove', onRightMouseMove);
         window.addEventListener('mouseup', onRightMouseUp);
+
+        // --- Mouse wheel zoom ---
+        container.addEventListener('wheel', onWheel, { passive: false });
 
         // --- Load and create model, then start loop ---
         loadAndCreateModel(id).then(() => {
@@ -167,10 +173,16 @@ export function useBlackHole(containerRef) {
         renderer.render(scene, camera);
     }
 
-    // --- Right-click drag to rotate the 3D model (with inertia) ---
-    function onRightMouseDown(e) {
+    // --- Right-click drag / both-button pan ---
+    function onCanvasMouseDown(e) {
         if (e.button === 2) {
-            isRightDragging = true;
+            if (e.buttons & 1) {
+                // 左键已按下 → 平移模式（先左后右）
+                isPanning = true;
+                isRightDragging = false;
+            } else {
+                isRightDragging = true;
+            }
             prevMouseX = e.clientX;
             prevMouseY = e.clientY;
             velocityX = 0;
@@ -180,12 +192,34 @@ export function useBlackHole(containerRef) {
             e.preventDefault();
             e.stopPropagation();
         }
+        if (e.button === 0 && e.buttons & 2) {
+            // 右键已按下 → 平移模式（先右后左）
+            isPanning = true;
+            isRightDragging = false;
+            prevMouseX = e.clientX;
+            prevMouseY = e.clientY;
+            e.preventDefault();
+            e.stopPropagation();
+        }
     }
 
     function onRightMouseMove(e) {
-        if (!isRightDragging || !holeGroup) return;
+        if (!holeGroup) return;
+
         const dx = e.clientX - prevMouseX;
         const dy = e.clientY - prevMouseY;
+
+        if (isPanning) {
+            // 左右双键按住：屏幕空间平移模型
+            holeGroup.position.x += dx * 0.01;
+            holeGroup.position.y -= dy * 0.01;
+            prevMouseX = e.clientX;
+            prevMouseY = e.clientY;
+            lastMoveTime = performance.now();
+            return;
+        }
+
+        if (!isRightDragging) return;
         const now = performance.now();
 
         holeGroup.rotation.x += dy * 0.01;
@@ -202,7 +236,17 @@ export function useBlackHole(containerRef) {
         lastMoveTime = now;
     }
 
-    function onRightMouseUp() {
+    function onRightMouseUp(e) {
+        // 双键平移中松开左键 → 切回旋转模式
+        if (e && e.button === 0 && isPanning) {
+            isPanning = false;
+            if (e.buttons & 2) isRightDragging = true;
+            return;
+        }
+        if (isPanning) {
+            isPanning = false;
+            return;
+        }
         isRightDragging = false;
 
         // 从滑动窗口中计算释放速度：总旋转量 / 时间 → 每帧角速度
@@ -237,6 +281,16 @@ export function useBlackHole(containerRef) {
         e.preventDefault();
     }
 
+    // --- Mouse wheel zoom ---
+    function onWheel(e) {
+        e.preventDefault();
+        cameraDistance += e.deltaY > 0 ? 0.5 : -0.5;
+        cameraDistance = Math.max(1.5, Math.min(40, cameraDistance));
+        camera.position.z = cameraDistance;
+        camera.position.y = cameraDistance * 0.125;
+        camera.lookAt(0, 0, 0);
+    }
+
     function setDragOver(state) {
         dragOver.value = state;
         targetGlow = state ? 2.0 : 0.8;
@@ -257,6 +311,7 @@ export function useBlackHole(containerRef) {
             const container = containerRef.value;
             if (container && renderer.domElement) {
                 container.removeChild(renderer.domElement);
+                container.removeEventListener('wheel', onWheel);
             }
         }
     }
