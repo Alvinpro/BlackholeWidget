@@ -67,7 +67,7 @@ BlackholeWidget/
 │   │   ├── model-3.js       # Model 3 (ice-blue theme)
 │   │   ├── model-4.js       # Model 4 (ray-traced Schwarzschild lens)
 │   │   ├── model-5.js       # Model 5 (Digi-Girl digital character)
-│   │   ├── model-6.js       # Model 6 (Digi-Girl, animated)
+│   │   ├── model-6.js       # Model 6 (Digi-Girl animated)
 │   │   └── model-x.js       # Model X (universal GLB loader)
 │   ├── shaders/             # GLSL shaders
 │   └── styles/              # CSS styles
@@ -86,6 +86,13 @@ BlackholeWidget/
 ```
 
 ## Changelog
+
+### v0.2.1
+
+- **Model X fixes**:
+  - Fixed UI freeze when loading large `.glb` files via raw binary IPC transfer (`tauri::ipc::Response`)
+  - Fixed PBR textures rendering in WebView2 by switching to `GLTFLoader.parse(ArrayBuffer)` instead of blob URLs
+  - Fixed embedded texture silent failures by adopting Tauri asset protocol for model loading
 
 ### v0.2.0
 
@@ -202,7 +209,7 @@ BlackholeWidget/
 │   │   ├── model-3.js       # 模型3号（冰蓝主题）
 │   │   ├── model-4.js       # 模型4号（施瓦西射线追踪透镜）
 │   │   ├── model-5.js       # 模型5号（Digi-Girl 数字角色）
-│   │   ├── model-6.js       # 模型6号（Digi-Girl，动态版本）
+│   │   ├── model-6.js       # 模型6号（Digi-Girl 动态版本）
 │   │   └── model-x.js       # 模型X号（通用 GLB 加载器）
 │   ├── shaders/             # GLSL 着色器
 │   └── styles/              # CSS 样式
@@ -222,11 +229,19 @@ BlackholeWidget/
 
 ## 更新日志
 
+### v0.2.1
+
+- **模型X号修复**：
+  - 修复加载大 `.glb` 文件时的 UI 冻结问题，改用原始二进制 IPC 传输（`tauri::ipc::Response`）
+  - 修复 WebView2 环境下 PBR 贴图渲染改用 `GLTFLoader.parse(ArrayBuffer)` 替代 blob URL
+  - 修复内嵌贴图静默加载失败的问题，改用 Tauri asset 协议加载模型
+
 ### v0.2.0
 
 - **模型X号**（新增）：通用 GLB 模型加载器 — 通过系统托盘选择任意 `.glb` 文件，自动适配内建动画进行渲染
 - **示例 GLB 模型**：来自 Sketchfab 的 Earth Cartoon 和 Blackhole（CC Attribution），存放在 `model-x/`
 - **模型X号使用说明**：使用指南，含署名信息，见 `Model-X.md`
+- **托盘左键切换**：左键点击托盘图标即可切换窗口显示/隐藏，与托盘菜单的切换功能保持一致
 
 ### v0.1.5
 
