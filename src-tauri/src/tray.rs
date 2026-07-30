@@ -2,7 +2,7 @@ use crate::config;
 use tauri::{
     image::Image,
     menu::{CheckMenuItemBuilder, MenuBuilder, MenuItemBuilder, SubmenuBuilder},
-    tray::TrayIconBuilder,
+    tray::{TrayIconBuilder, TrayIconEvent},
     AppHandle, Emitter, LogicalSize, Manager, Runtime, WebviewWindowBuilder,
 };
 use tauri_plugin_autostart::AutoLaunchManager;
@@ -140,6 +140,19 @@ pub fn create_tray<R: Runtime>(app: &AppHandle<R>) -> tauri::Result<()> {
     let _tray = TrayIconBuilder::with_id("main-tray")
         .icon(icon)
         .menu(&menu)
+        .on_tray_icon_event(|tray, event| {
+            if let TrayIconEvent::Click { .. } = event {
+                if let Some(window) = tray.app_handle().get_webview_window("main") {
+                    let visible = window.is_visible().unwrap_or(false);
+                    if visible {
+                        window.hide().ok();
+                    } else {
+                        window.show().ok();
+                        window.set_focus().ok();
+                    }
+                }
+            }
+        })
         .on_menu_event(|app, event| {
             let event_id = event.id().as_ref().to_string();
             match event_id.as_str() {
