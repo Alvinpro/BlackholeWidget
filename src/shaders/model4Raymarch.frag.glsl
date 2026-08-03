@@ -61,7 +61,7 @@ vec3 sampleDisk(vec2 xz, float r, float rs) {
   float sn = xz.y / r;
   float cs = xz.x / r;
   float omega = sqrt(rs / max(r, innerR));
-  float rot = u_time * 0.30 * omega * 4.0;
+  float rot = mod(u_time * 0.30 * omega * 4.0, TAU);
   float cR = cos(rot), sR = sin(rot);
 
   vec2 q = vec2(cs * cR + sn * sR, -cs * sR + sn * cR);

@@ -54,12 +54,17 @@ export default function createModel(group) {
         let delta = elapsed - lastElapsed;
         lastElapsed = elapsed;
 
-        // 限制最大 delta，防止休眠唤醒时产生巨大跳跃
-        if (delta > 100) delta = 16.66;
+        // 休眠唤醒/时钟回退：跳过该帧的时间累加，避免相位突变
+        if (delta < 0 || delta > 5000) {
+            delta = 0;
+        }
 
-        // 累加局部时间并定期取模，避免全局 performance.now() 持续增长
-        // 导致传入 GLSL 后，超出 32 位浮点数精度而使动画永久静止
-        localTime = (localTime + delta * 0.001) % 3600;
+        // 不钳制 delta：低帧率下动画速度与真实时间保持一致
+        // 上限 65536s(~18h) 后归零兜底，保证 float32 上传精度；动画永不冻结
+        localTime += delta * 0.001;
+        if (localTime > 65536) {
+            localTime = 0;
+        }
 
         material.uniforms.u_time.value = localTime;
 

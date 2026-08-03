@@ -87,6 +87,12 @@ BlackholeWidget/
 
 ## Changelog
 
+### v0.2.2
+
+- **Window size persistence**: window size is saved on zoom in/out and restored automatically on next startup
+- **Model 4 animation fix**: replaced absolute time with a local delta-time accumulator and normalized rotation angles modulo 2π in the shader, fixing animation freeze or sluggishness after prolonged runtime
+- **WebGL context recovery**: if the GPU driver resets (context lost), the scene is automatically rebuilt and animation resumes
+
 ### v0.2.1
 
 - **Model X fixes**:
@@ -228,6 +234,12 @@ BlackholeWidget/
 ```
 
 ## 更新日志
+
+### v0.2.2
+
+- **窗口大小持久化**：托盘放大/缩小后保存窗口大小，下次启动自动恢复
+- **模型4号动画修复**：着色器时间改用局部增量累加，并将旋转角取模 2π，修复长时间运行后动画停止或卡顿的问题
+- **WebGL context 容错**：GPU 驱动重置（context lost）后自动重建场景并恢复动画
 
 ### v0.2.1
 

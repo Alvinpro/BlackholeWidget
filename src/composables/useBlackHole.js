@@ -50,6 +50,12 @@ export function useBlackHole(containerRef) {
         renderer.toneMappingExposure = 1.0;
         container.appendChild(renderer.domElement);
 
+        // --- WebGL context lost / restored ---
+        // 长时间高负载（如模型4号射线追踪）可能触发 GPU 驱动重置，
+        // 监听 context 事件并在恢复后重建整个场景
+        renderer.domElement.addEventListener('webglcontextlost', onContextLost);
+        renderer.domElement.addEventListener('webglcontextrestored', onContextRestored);
+
         // --- Scene ---
         scene = new THREE.Scene();
 
@@ -83,6 +89,9 @@ export function useBlackHole(containerRef) {
         loadAndCreateModel(id).then(() => {
             animate();
         });
+
+        // 周期性重置定时器（仅对需要重置的模型生效）
+        startAutoReload();
     }
 
     async function loadAndCreateModel(modelId, params) {
@@ -91,7 +100,120 @@ export function useBlackHole(containerRef) {
         modelInstance = createModel(holeGroup, params);
     }
 
+    let contextLost = false;
+
+    // --- 周期性重置：模型4号着色器状态在部分 GPU/WebView2 环境下
+    // 长时间运行后画面趋于静止，通过定时重建模型实例恢复动画
+    const AUTO_RELOAD_INTERVAL_MS = 5 * 60 * 1000; // 每 5 分钟
+    const AUTO_RELOAD_MODELS = ['model-4'];
+    let autoReloadTimer = null;
+    let isReloading = false;
+
+    function startAutoReload() {
+        clearInterval(autoReloadTimer);
+        autoReloadTimer = setInterval(() => {
+            if (contextLost || isReloading) return;
+            if (!AUTO_RELOAD_MODELS.includes(currentModelId.value)) return;
+            reloadModel();
+        }, AUTO_RELOAD_INTERVAL_MS);
+    }
+
+    // 重建当前模型实例：重置着色器编译状态与动画时间（u_time 归零），保留视角/缩放
+    async function reloadModel() {
+        const id = currentModelId.value;
+        if (!id || !modelInstance) return;
+        isReloading = true;
+        try {
+            const oldInstance = modelInstance;
+            const oldChildren = [...holeGroup.children];
+            // 先加载新实例（与旧实例并存一帧，避免黑闪），再清理旧实例
+            await loadAndCreateModel(id, { __reload: true });
+            if (oldInstance) {
+                oldInstance.dispose();
+                for (const child of oldChildren) {
+                    holeGroup.remove(child);
+                }
+            }
+            currentGlow = targetGlow;
+            if (modelInstance) {
+                modelInstance.setGlow(currentGlow);
+            }
+        } finally {
+            isReloading = false;
+        }
+    }
+
+    // --- WebGL context lost / restored ---
+    function onContextLost(e) {
+        // 必须 preventDefault 才允许浏览器恢复 context
+        e.preventDefault();
+        contextLost = true;
+        cancelAnimationFrame(animationId);
+    }
+
+    async function onContextRestored() {
+        // 保存当前状态，重建后恢复
+        const saved = {
+            modelId: currentModelId.value,
+            rotation: holeGroup ? holeGroup.rotation.clone() : null,
+            position: holeGroup ? holeGroup.position.clone() : null,
+            cameraDistance,
+            currentGlow,
+            targetGlow,
+        };
+
+        // 清理旧渲染器与模型
+        cancelAnimationFrame(animationId);
+        if (modelInstance) {
+            modelInstance.dispose();
+            modelInstance = null;
+        }
+        if (renderer) {
+            renderer.dispose();
+            const container = containerRef.value;
+            if (container && renderer.domElement.parentNode === container) {
+                container.removeChild(renderer.domElement);
+            }
+        }
+        removeEventListeners();
+
+        // 重建场景（新的 canvas / renderer / 模型 / 动画循环）
+        init(saved.modelId);
+
+        // 恢复交互状态（glow 由动画循环自然收敛到 targetGlow）
+        if (holeGroup && saved.rotation) {
+            holeGroup.rotation.copy(saved.rotation);
+            holeGroup.position.copy(saved.position);
+        }
+        cameraDistance = saved.cameraDistance;
+        currentGlow = saved.currentGlow;
+        targetGlow = saved.targetGlow;
+        velocityX = 0;
+        velocityY = 0;
+        deltaHistory.length = 0;
+        if (camera) {
+            camera.position.z = cameraDistance;
+            camera.position.y = cameraDistance * 0.125;
+            camera.lookAt(0, 0, 0);
+        }
+        contextLost = false;
+    }
+
+    function removeEventListeners() {
+        window.removeEventListener('resize', onResize);
+        window.removeEventListener('mousemove', onRightMouseMove);
+        window.removeEventListener('mouseup', onRightMouseUp);
+        const container = containerRef.value;
+        if (container) {
+            container.removeEventListener('mousedown', onCanvasMouseDown);
+            container.removeEventListener('contextmenu', preventContextMenu);
+            container.removeEventListener('wheel', onWheel);
+        }
+    }
+
     async function switchModel(modelId, params) {
+        // 忽略 context 丢失期间的切换，统一由恢复流程重建
+        if (contextLost) return;
         // 允许同一模型 ID 带参数重新加载（如模型X号选择新文件）
         if (currentModelId.value === modelId && !params) return;
 
@@ -304,9 +426,8 @@ export function useBlackHole(containerRef) {
 
     function cleanup() {
         cancelAnimationFrame(animationId);
-        window.removeEventListener('resize', onResize);
-        window.removeEventListener('mousemove', onRightMouseMove);
-        window.removeEventListener('mouseup', onRightMouseUp);
+        clearInterval(autoReloadTimer);
+        removeEventListeners();
 
         if (modelInstance) {
             modelInstance.dispose();
@@ -317,7 +438,6 @@ export function useBlackHole(containerRef) {
             const container = containerRef.value;
             if (container && renderer.domElement) {
                 container.removeChild(renderer.domElement);
-                container.removeEventListener('wheel', onWheel);
             }
         }
     }
