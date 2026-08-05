@@ -62,17 +62,17 @@
 
     <!-- Format chips -->
     <rect x="0" y="262" width="126" height="30" rx="15" fill="#141428" stroke="#f59e0b" stroke-width="1" stroke-opacity="0.55"/>
-    <text x="63" y="281" font-family="ui-monospace, 'SFMono-Regular', 'Menlo', monospace" font-size="18" font-weight="600" fill="#fbbf24" text-anchor="middle">
+    <text x="63" y="281" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="18" font-weight="600" fill="#fbbf24" text-anchor="middle">
       .glb only
     </text>
 
     <rect x="140" y="262" width="152" height="30" rx="15" fill="#141428" stroke="#8b5cf6" stroke-width="1" stroke-opacity="0.5"/>
-    <text x="216" y="281" font-family="ui-monospace, 'SFMono-Regular', 'Menlo', monospace" font-size="18" font-weight="600" fill="#c4b5fd" text-anchor="middle">
+    <text x="216" y="281" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="18" font-weight="600" fill="#c4b5fd" text-anchor="middle">
       auto-scale
     </text>
 
     <rect x="306" y="262" width="260" height="30" rx="15" fill="#141428" stroke="#8b5cf6" stroke-width="1" stroke-opacity="0.5"/>
-    <text x="436" y="281" font-family="ui-monospace, 'SFMono-Regular', 'Menlo', monospace" font-size="18" font-weight="600" fill="#c4b5fd" text-anchor="middle">
+    <text x="436" y="281" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="18" font-weight="600" fill="#c4b5fd" text-anchor="middle">
       animations auto-play
     </text>
   </g>
@@ -96,7 +96,7 @@
     <!-- Rotation arc (auto-spin cue) -->
     <circle cx="0" cy="0" r="78" fill="none" stroke="#8b5cf6" stroke-width="2" stroke-dasharray="4 10" opacity="0.7"/>
     <path d="M 39 -67.5 l 9 5 M 39 -67.5 l 9 -5" stroke="#a78bfa" stroke-width="2.2" fill="none" stroke-linecap="round"/>
-    <text x="0" y="-96" font-family="ui-monospace, 'SFMono-Regular', 'Menlo', monospace" font-size="18" font-weight="600" fill="#a78bfa" text-anchor="middle">
+    <text x="0" y="-96" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="18" font-weight="600" fill="#a78bfa" text-anchor="middle">
       AUTO-ROTATE
     </text>
 
@@ -128,7 +128,7 @@
     <circle cx="-64" cy="101" r="4.5" fill="#8b5cf6"/>
     <circle cx="-32" cy="101" r="4.5" fill="#8b5cf6"/>
     <circle cx="0" cy="101" r="4.5" fill="#fbbf24"/>
-    <text x="28" y="108" font-family="ui-monospace, 'SFMono-Regular', 'Menlo', monospace" font-size="20" font-weight="600" fill="#c4b5fd" text-anchor="start">
+    <text x="28" y="108" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="20" font-weight="600" fill="#c4b5fd" text-anchor="start">
       ANIMATIONS
     </text>
   </g>
@@ -143,10 +143,10 @@
       <path d="M 14 0 V 10 H 24"/>
     </g>
 
-    <text x="54" y="31" font-family="ui-monospace, 'SFMono-Regular', 'Menlo', monospace" font-size="20" font-weight="600" fill="#e8e6e0" text-anchor="start">
+    <text x="54" y="31" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="20" font-weight="600" fill="#e8e6e0" text-anchor="start">
       my-model.glb
     </text>
-    <text x="54" y="56" font-family="ui-monospace, 'SFMono-Regular', 'Menlo', monospace" font-size="16" font-weight="400" fill="#71717a" text-anchor="start">
+    <text x="54" y="56" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="16" font-weight="400" fill="#71717a" text-anchor="start">
       user file · local only
     </text>
   </g>
