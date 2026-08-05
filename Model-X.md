@@ -1,3 +1,5 @@
+![model-x-hero](./assets/readme/model-x-hero.svg)
+
 # Model X Usage Guide / 模型X号使用说明
 
 ---

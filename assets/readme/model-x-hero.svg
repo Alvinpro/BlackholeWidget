@@ -1,0 +1,159 @@
+<svg xmlns="http://www.w3.org/2000/svg"
+     width="1200" height="380" viewBox="0 0 1200 380"
+     role="img" aria-labelledby="mx-title mx-desc">
+  <title id="mx-title">Model X — universal GLB model loader</title>
+  <desc id="mx-desc">Model X 模型X号: select any .glb file via the tray menu, and the widget auto-scales it to fit and plays its built-in animations.</desc>
+
+  <defs>
+    <radialGradient id="space-bg" cx="50%" cy="50%" r="70%">
+      <stop offset="0%" stop-color="#141428"/>
+      <stop offset="100%" stop-color="#08080e"/>
+    </radialGradient>
+
+    <radialGradient id="bh-glow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#0a0a14"/>
+      <stop offset="55%" stop-color="#0a0a14"/>
+      <stop offset="82%" stop-color="#1a1030" stop-opacity="0.6"/>
+      <stop offset="100%" stop-color="#08080e" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1200" height="380" rx="26" fill="url(#space-bg)"/>
+
+  <!-- Subtle star particles -->
+  <g opacity="0.35">
+    <circle cx="118" cy="64" r="1" fill="#e8e6e0"/>
+    <circle cx="296" cy="322" r="0.8" fill="#c4b5fd"/>
+    <circle cx="470" cy="96" r="0.9" fill="#fcd34d"/>
+    <circle cx="628" cy="300" r="1.1" fill="#e8e6e0"/>
+    <circle cx="1112" cy="58" r="0.9" fill="#c4b5fd"/>
+    <circle cx="1140" cy="330" r="1" fill="#e8e6e0"/>
+    <circle cx="646" cy="58" r="0.7" fill="#fcd34d"/>
+  </g>
+
+  <!-- ===== LEFT: Title Block ===== -->
+  <g id="title-block" transform="translate(64 56)">
+    <text x="0" y="0" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', sans-serif" font-size="14" font-weight="600" letter-spacing="3" fill="#8b5cf6" text-anchor="start">
+      MODEL X · 模型X号 · GLB LOADER
+    </text>
+
+    <text x="0" y="58" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="64" font-weight="800" fill="#e8e6e0" letter-spacing="-1" text-anchor="start">
+      Model X
+    </text>
+
+    <text x="0" y="104" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="26" font-weight="600" fill="#a78bfa" text-anchor="start">
+      Universal GLB Model Loader
+    </text>
+
+    <text x="0" y="138" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', sans-serif" font-size="24" font-weight="600" fill="#a78bfa" letter-spacing="1" text-anchor="start">
+      通用 GLB 模型加载器
+    </text>
+
+    <line x1="0" y1="166" x2="64" y2="166" stroke="#8b5cf6" stroke-width="2" stroke-opacity="0.5"/>
+
+    <text x="0" y="200" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="18" font-weight="400" fill="#a1a1aa" text-anchor="start">
+      Pick any .glb — it auto-scales to fit and plays built-in animations.
+    </text>
+
+    <text x="0" y="230" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', sans-serif" font-size="16" font-weight="400" fill="#71717a" text-anchor="start">
+      选择任意 .glb 文件，自动缩放适配窗口并播放内建动画。
+    </text>
+
+    <!-- Format chips -->
+    <rect x="0" y="262" width="126" height="30" rx="15" fill="#141428" stroke="#f59e0b" stroke-width="1" stroke-opacity="0.55"/>
+    <text x="63" y="281" font-family="ui-monospace, 'SFMono-Regular', 'Menlo', monospace" font-size="18" font-weight="600" fill="#fbbf24" text-anchor="middle">
+      .glb only
+    </text>
+
+    <rect x="140" y="262" width="152" height="30" rx="15" fill="#141428" stroke="#8b5cf6" stroke-width="1" stroke-opacity="0.5"/>
+    <text x="216" y="281" font-family="ui-monospace, 'SFMono-Regular', 'Menlo', monospace" font-size="18" font-weight="600" fill="#c4b5fd" text-anchor="middle">
+      auto-scale
+    </text>
+
+    <rect x="306" y="262" width="260" height="30" rx="15" fill="#141428" stroke="#8b5cf6" stroke-width="1" stroke-opacity="0.5"/>
+    <text x="436" y="281" font-family="ui-monospace, 'SFMono-Regular', 'Menlo', monospace" font-size="18" font-weight="600" fill="#c4b5fd" text-anchor="middle">
+      animations auto-play
+    </text>
+  </g>
+
+  <!-- ===== RIGHT: GLB Load Diagram ===== -->
+  <g id="glb-diagram" transform="translate(960 178)">
+    <!-- Background glow + photon rings (widget identity) -->
+    <circle cx="0" cy="0" r="150" fill="url(#bh-glow)"/>
+    <circle cx="0" cy="0" r="90" fill="none" stroke="#7c3aed" stroke-width="1" opacity="0.25"/>
+    <circle cx="0" cy="0" r="96" fill="none" stroke="#8b5cf6" stroke-width="1.2" opacity="0.35"/>
+    <circle cx="0" cy="0" r="102" fill="none" stroke="#a78bfa" stroke-width="0.8" opacity="0.2"/>
+
+    <!-- Auto-fit brackets (auto-scale cue) -->
+    <g stroke="#71717a" stroke-width="2" opacity="0.9" fill="none">
+      <path d="M -100 -60 V -42 M -100 -60 H -82"/>
+      <path d="M 100 -60 V -42 M 100 -60 H 82"/>
+      <path d="M -100 60 V 42 M -100 60 H -82"/>
+      <path d="M 100 60 V 42 M 100 60 H 82"/>
+    </g>
+
+    <!-- Rotation arc (auto-spin cue) -->
+    <circle cx="0" cy="0" r="78" fill="none" stroke="#8b5cf6" stroke-width="2" stroke-dasharray="4 10" opacity="0.7"/>
+    <path d="M 39 -67.5 l 9 5 M 39 -67.5 l 9 -5" stroke="#a78bfa" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+    <text x="0" y="-96" font-family="ui-monospace, 'SFMono-Regular', 'Menlo', monospace" font-size="18" font-weight="600" fill="#a78bfa" text-anchor="middle">
+      AUTO-ROTATE
+    </text>
+
+    <!-- Wireframe GLB cube -->
+    <g stroke-linecap="round" stroke-linejoin="round">
+      <!-- front face -->
+      <path d="M -24 6 H 24 V 54 H -24 Z" fill="#141428" fill-opacity="0.6" stroke="#c4b5fd" stroke-width="2"/>
+      <!-- top face -->
+      <path d="M -24 6 L -6 -14 H 42 L 24 6 Z" fill="none" stroke="#8b5cf6" stroke-width="1.8"/>
+      <!-- right face -->
+      <path d="M 24 6 L 42 -14 V 34 L 24 54 Z" fill="none" stroke="#8b5cf6" stroke-width="1.8"/>
+      <!-- accent edge -->
+      <path d="M -6 -14 H 42" fill="none" stroke="#f59e0b" stroke-width="2"/>
+      <!-- node dots -->
+      <circle cx="-24" cy="6" r="2.8" fill="#f59e0b"/>
+      <circle cx="24" cy="6" r="2.2" fill="#c4b5fd"/>
+      <circle cx="24" cy="54" r="2.2" fill="#c4b5fd"/>
+      <circle cx="-24" cy="54" r="2.2" fill="#c4b5fd"/>
+      <circle cx="-6" cy="-14" r="2.2" fill="#c4b5fd"/>
+      <circle cx="42" cy="-14" r="2.2" fill="#c4b5fd"/>
+      <circle cx="42" cy="34" r="2.2" fill="#c4b5fd"/>
+    </g>
+
+    <!-- Animation timeline (auto-play cue) -->
+    <rect x="-170" y="78" width="340" height="46" rx="23" fill="#1e1e2e" stroke="#8b5cf6" stroke-width="1" stroke-opacity="0.45"/>
+    <path d="M -140 90 L -140 112 L -122 101 Z" fill="#f59e0b"/>
+    <line x1="-96" y1="101" x2="0" y2="101" stroke="#8b5cf6" stroke-width="2" opacity="0.6"/>
+    <circle cx="-96" cy="101" r="4.5" fill="#8b5cf6"/>
+    <circle cx="-64" cy="101" r="4.5" fill="#8b5cf6"/>
+    <circle cx="-32" cy="101" r="4.5" fill="#8b5cf6"/>
+    <circle cx="0" cy="101" r="4.5" fill="#fbbf24"/>
+    <text x="28" y="108" font-family="ui-monospace, 'SFMono-Regular', 'Menlo', monospace" font-size="20" font-weight="600" fill="#c4b5fd" text-anchor="start">
+      ANIMATIONS
+    </text>
+  </g>
+
+  <!-- ===== FILE CARD + LOAD PATH (top right) ===== -->
+  <g id="file-card" transform="translate(730 34)">
+    <rect width="260" height="72" rx="14" fill="#141428" stroke="#8b5cf6" stroke-width="1" stroke-opacity="0.5"/>
+
+    <!-- file glyph -->
+    <g transform="translate(20 24)" stroke="#a78bfa" stroke-width="1.6" fill="none">
+      <path d="M 0 0 H 14 L 24 10 V 24 H 0 Z"/>
+      <path d="M 14 0 V 10 H 24"/>
+    </g>
+
+    <text x="54" y="31" font-family="ui-monospace, 'SFMono-Regular', 'Menlo', monospace" font-size="20" font-weight="600" fill="#e8e6e0" text-anchor="start">
+      my-model.glb
+    </text>
+    <text x="54" y="56" font-family="ui-monospace, 'SFMono-Regular', 'Menlo', monospace" font-size="16" font-weight="400" fill="#71717a" text-anchor="start">
+      user file · local only
+    </text>
+  </g>
+
+  <!-- Load path: card → cube -->
+  <g>
+    <path d="M 860 108 C 866 128, 916 130, 944 156" fill="none" stroke="#f59e0b" stroke-width="2" stroke-dasharray="2 6" stroke-linecap="round" opacity="0.85"/>
+    <path d="M 939 147 L 952 156 L 940 164 Z" fill="#f59e0b" opacity="0.9"/>
+  </g>
+</svg>
