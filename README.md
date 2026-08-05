@@ -1,8 +1,10 @@
+![hero](./assets/readme/hero.svg)
+
 # Blackhole Widget
 
 A cute (Q-version) desktop 3D black hole widget — drag files into it to delete them.
 
-![screenshot](screenshots/BlackHoleWidget-Q-version.webp)
+![Blackhole Widget showcase](assets/readme/showcase.webp)
 
 ## Features
 

@@ -1,0 +1,138 @@
+<svg xmlns="http://www.w3.org/2000/svg"
+     width="1200" height="380" viewBox="0 0 1200 380"
+     role="img" aria-labelledby="hero-title hero-desc">
+  <title id="hero-title">Blackhole Widget</title>
+  <desc id="hero-desc">Q版桌面3D黑洞小组件 — 拖拽文件到黑洞即可删除</desc>
+
+  <defs>
+    <radialGradient id="space-bg" cx="50%" cy="50%" r="70%">
+      <stop offset="0%" stop-color="#141428"/>
+      <stop offset="100%" stop-color="#08080e"/>
+    </radialGradient>
+
+    <radialGradient id="bh-glow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#0a0a14"/>
+      <stop offset="60%" stop-color="#0a0a14"/>
+      <stop offset="85%" stop-color="#1a1030" stop-opacity="0.6"/>
+      <stop offset="100%" stop-color="#08080e" stop-opacity="0"/>
+    </radialGradient>
+
+
+    <linearGradient id="accretion-disk" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#f59e0b" stop-opacity="0"/>
+      <stop offset="30%" stop-color="#f59e0b" stop-opacity="0.15"/>
+      <stop offset="50%" stop-color="#fbbf24" stop-opacity="0.25"/>
+      <stop offset="70%" stop-color="#f59e0b" stop-opacity="0.15"/>
+      <stop offset="100%" stop-color="#f59e0b" stop-opacity="0"/>
+    </linearGradient>
+
+    <linearGradient id="accretion-arc" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#f59e0b" stop-opacity="0"/>
+      <stop offset="40%" stop-color="#fbbf24" stop-opacity="0.35"/>
+      <stop offset="60%" stop-color="#f59e0b" stop-opacity="0.2"/>
+      <stop offset="100%" stop-color="#f59e0b" stop-opacity="0"/>
+    </linearGradient>
+
+    <linearGradient id="accretion-arc-bottom" x1="100%" y1="0%" x2="0%" y2="0%">
+      <stop offset="0%" stop-color="#f59e0b" stop-opacity="0"/>
+      <stop offset="30%" stop-color="#fbbf24" stop-opacity="0.12"/>
+      <stop offset="70%" stop-color="#f59e0b" stop-opacity="0.06"/>
+      <stop offset="100%" stop-color="#f59e0b" stop-opacity="0"/>
+    </linearGradient>
+
+
+  </defs>
+
+  <!-- Background -->
+  <rect width="1200" height="380" rx="26" fill="url(#space-bg)"/>
+
+  <!-- Subtle star particles -->
+  <g opacity="0.4">
+    <circle cx="820" cy="120" r="1" fill="#e8e6e0"/>
+    <circle cx="950" cy="80" r="0.8" fill="#c4b5fd"/>
+    <circle cx="1020" cy="200" r="1.2" fill="#fcd34d"/>
+    <circle cx="880" cy="280" r="0.7" fill="#e8e6e0"/>
+    <circle cx="1100" cy="150" r="0.9" fill="#c4b5fd"/>
+    <circle cx="780" cy="260" r="0.6" fill="#fcd34d"/>
+    <circle cx="1060" cy="310" r="1" fill="#e8e6e0"/>
+    <circle cx="920" cy="340" r="0.5" fill="#c4b5fd"/>
+    <circle cx="1150" cy="70" r="0.8" fill="#e8e6e0"/>
+  </g>
+
+  <!-- ===== LEFT: Title Block ===== -->
+  <g id="title-block" transform="translate(64 56)">
+    <!-- Category label -->
+    <text x="0" y="0" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', sans-serif" font-size="14" font-weight="600" letter-spacing="3" fill="#8b5cf6" text-anchor="start">
+      DESKTOP WIDGET · 桌面小组件
+    </text>
+
+    <!-- Main title -->
+    <text x="0" y="58" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="62" font-weight="800" fill="#e8e6e0" letter-spacing="-1" text-anchor="start">
+      Blackhole Widget
+    </text>
+
+    <!-- Chinese subtitle -->
+    <text x="0" y="118" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', sans-serif" font-size="28" font-weight="600" fill="#a78bfa" letter-spacing="2" text-anchor="start">
+      Q版桌面 3D 黑洞
+    </text>
+
+    <!-- Divider line -->
+    <line x1="0" y1="148" x2="64" y2="148" stroke="#8b5cf6" stroke-width="2" stroke-opacity="0.5"/>
+
+    <!-- Tagline -->
+    <text x="0" y="184" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', sans-serif" font-size="18" font-weight="400" fill="#a1a1aa" text-anchor="start">
+      拖拽文件到黑洞 → 一键删除
+    </text>
+    <text x="0" y="214" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="16" font-weight="400" fill="#71717a" text-anchor="start">
+      Drag files into the black hole to delete them — recycle bin or permanent.
+    </text>
+
+    <!-- Version badge -->
+    <rect x="0" y="246" width="64" height="28" rx="14" fill="#1e1e2e" stroke="#8b5cf6" stroke-width="1" stroke-opacity="0.4"/>
+    <text x="32" y="265" font-family="ui-monospace, 'SFMono-Regular', 'Menlo', monospace" font-size="13" font-weight="600" fill="#c4b5fd" text-anchor="middle">
+      v0.2.2
+    </text>
+  </g>
+
+  <!-- ===== RIGHT: Black Hole Diagram ===== -->
+  <g id="black-hole-diagram" transform="translate(960 190)">
+    <!-- Large background glow -->
+    <circle cx="0" cy="0" r="160" fill="url(#bh-glow)"/>
+
+    <!-- Accretion disk (elliptical, top half — front of disk) -->
+    <g opacity="0.6">
+      <ellipse cx="0" cy="0" rx="150" ry="40" fill="none" stroke="url(#accretion-disk)" stroke-width="18"/>
+    </g>
+
+    <!-- Accretion disk arc (top slice — brighter) -->
+    <g transform="rotate(-15)" opacity="0.7">
+      <path d="M -160 0 A 160 42 0 0 1 160 0" fill="none" stroke="url(#accretion-arc)" stroke-width="24"/>
+    </g>
+
+    <!-- Accretion disk arc (bottom slice — dimmer, behind BH) -->
+    <g transform="rotate(165)" opacity="0.3">
+      <path d="M -160 0 A 160 42 0 0 1 160 0" fill="none" stroke="url(#accretion-arc-bottom)" stroke-width="14"/>
+    </g>
+
+    <!-- Event horizon (dark circle) -->
+    <circle cx="0" cy="0" r="58" fill="#08080e"/>
+
+    <!-- Inner shadow ring on event horizon -->
+    <circle cx="0" cy="0" r="58" fill="none" stroke="#1a1030" stroke-width="2" opacity="0.5"/>
+
+    <!-- Photon ring (thin glowing circle around the event horizon) -->
+    <circle cx="0" cy="0" r="72" fill="none" stroke="#8b5cf6" stroke-width="2" opacity="0.6"/>
+    <circle cx="0" cy="0" r="76" fill="none" stroke="#a78bfa" stroke-width="1" opacity="0.3"/>
+    <circle cx="0" cy="0" r="68" fill="none" stroke="#7c3aed" stroke-width="1.5" opacity="0.4"/>
+
+    <!-- Bright spot on photon ring (top right) -->
+    <circle cx="51" cy="-51" r="4" fill="#c4b5fd" opacity="0.5"/>
+    <circle cx="51" cy="-51" r="8" fill="#8b5cf6" opacity="0.15"/>
+
+    <!-- Small orbiting particle dots -->
+    <circle cx="-100" cy="-12" r="2" fill="#fbbf24" opacity="0.5"/>
+    <circle cx="80" cy="28" r="1.5" fill="#f59e0b" opacity="0.4"/>
+    <circle cx="-60" cy="35" r="1.8" fill="#fbbf24" opacity="0.35"/>
+    <circle cx="110" cy="-20" r="1.2" fill="#fcd34d" opacity="0.3"/>
+  </g>
+</svg>

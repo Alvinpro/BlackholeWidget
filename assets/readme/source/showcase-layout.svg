@@ -1,0 +1,79 @@
+<svg xmlns="http://www.w3.org/2000/svg"
+     width="1200" height="620" viewBox="0 0 1200 620"
+     role="img" aria-labelledby="showcase-title showcase-desc">
+  <title id="showcase-title">Blackhole Widget showcase</title>
+  <desc id="showcase-desc">Blackhole Widget 实机截图展示板 — 深空风格，与首页 Hero 视觉一致</desc>
+
+  <defs>
+    <radialGradient id="space-bg" cx="50%" cy="50%" r="70%">
+      <stop offset="0%" stop-color="#141428"/>
+      <stop offset="100%" stop-color="#08080e"/>
+    </radialGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1200" height="620" rx="26" fill="url(#space-bg)"/>
+
+  <!-- Photon rings behind the screenshot card (motif) -->
+  <circle cx="600" cy="309" r="620" fill="none" stroke="#8b5cf6" stroke-width="1.5" opacity="0.12"/>
+  <circle cx="600" cy="309" r="648" fill="none" stroke="#8b5cf6" stroke-width="1" opacity="0.08"/>
+
+  <!-- Star field (top band) -->
+  <g opacity="0.4">
+    <circle cx="88" cy="40" r="1" fill="#e8e6e0"/>
+    <circle cx="150" cy="22" r="0.8" fill="#c4b5fd"/>
+    <circle cx="320" cy="52" r="1.1" fill="#fcd34d"/>
+    <circle cx="470" cy="18" r="0.7" fill="#e8e6e0"/>
+    <circle cx="610" cy="40" r="0.9" fill="#c4b5fd"/>
+    <circle cx="760" cy="24" r="1" fill="#fcd34d"/>
+    <circle cx="900" cy="48" r="0.8" fill="#e8e6e0"/>
+    <circle cx="1050" cy="20" r="1.2" fill="#c4b5fd"/>
+    <circle cx="1150" cy="42" r="0.7" fill="#e8e6e0"/>
+  </g>
+
+  <!-- Star field (bottom band) -->
+  <g opacity="0.4">
+    <circle cx="60" cy="566" r="1" fill="#fcd34d"/>
+    <circle cx="220" cy="590" r="0.8" fill="#e8e6e0"/>
+    <circle cx="400" cy="574" r="1.1" fill="#c4b5fd"/>
+    <circle cx="580" cy="596" r="0.7" fill="#e8e6e0"/>
+    <circle cx="720" cy="570" r="0.9" fill="#fcd34d"/>
+    <circle cx="880" cy="592" r="1" fill="#e8e6e0"/>
+    <circle cx="1040" cy="572" r="0.8" fill="#c4b5fd"/>
+    <circle cx="1152" cy="590" r="1.1" fill="#fcd34d"/>
+  </g>
+
+  <!-- Side stars -->
+  <g opacity="0.35">
+    <circle cx="26" cy="160" r="0.7" fill="#e8e6e0"/>
+    <circle cx="30" cy="300" r="0.8" fill="#c4b5fd"/>
+    <circle cx="1168" cy="210" r="0.9" fill="#e8e6e0"/>
+    <circle cx="1172" cy="430" r="0.7" fill="#fcd34d"/>
+  </g>
+
+  <!-- Category label (top-left) -->
+  <text x="64" y="34" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', sans-serif" font-size="14" font-weight="600" letter-spacing="3" fill="#8b5cf6" text-anchor="start">
+    LIVE PREVIEW · 实机截图
+  </text>
+
+  <!-- Version badge (top-right) -->
+  <rect x="1100" y="16" width="64" height="26" rx="13" fill="#1e1e2e" stroke="#8b5cf6" stroke-width="1.5" stroke-opacity="0.4"/>
+  <text x="1132" y="34" font-family="ui-monospace, 'SFMono-Regular', 'Menlo', monospace" font-size="12.5" font-weight="600" fill="#c4b5fd" text-anchor="middle">
+    v0.2.2
+  </text>
+
+  <!-- Screenshot card frames (screenshot is composited at 48,76 1104x467) -->
+  <rect x="36" y="64" width="1128" height="491" rx="32" fill="none" stroke="#7c3aed" stroke-width="1" stroke-opacity="0.18"/>
+  <rect x="44" y="72" width="1112" height="475" rx="26" fill="none" stroke="#8b5cf6" stroke-width="1.5" stroke-opacity="0.4"/>
+
+  <!-- Gold orbiting dots near card corners -->
+  <circle cx="1150" cy="84" r="2.2" fill="#fbbf24" opacity="0.5"/>
+  <circle cx="50" cy="522" r="1.7" fill="#f59e0b" opacity="0.4"/>
+  <circle cx="60" cy="90" r="1.4" fill="#fcd34d" opacity="0.35"/>
+  <circle cx="1142" cy="530" r="1.6" fill="#fbbf24" opacity="0.3"/>
+
+  <!-- Caption (bottom-center, mono metadata) -->
+  <text x="600" y="588" font-family="ui-monospace, 'SFMono-Regular', 'Menlo', monospace" font-size="15" font-weight="400" letter-spacing="1.5" fill="#71717a" text-anchor="middle">
+    WINDOWS · TAURI V2 · THREE.JS · VUE 3
+  </text>
+</svg>
