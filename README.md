@@ -4,7 +4,7 @@
 
 A cute (Q-version) desktop 3D black hole widget — drag files into it to delete them.
 
-![Blackhole Widget showcase](screenshots\BlackHoleWidget-Q-version.webp)
+![Blackhole Widget showcase](./screenshots/BlackHoleWidget-Q-version.webp)
 
 ## Features
 
