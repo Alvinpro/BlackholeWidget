@@ -160,10 +160,6 @@ Q版 桌面 3D 黑洞小组件 — 将文件拖入黑洞即可删除。
 - 设置窗口：删除前确认、永久删除开关
 - 窗口可拖拽移动位置
 
-## 截图
-
-![screenshot](screenshots/BlackHoleWidget-Q-version.webp)
-
 ## 环境要求
 
 - Windows 10 / 11（内置 WebView2）
